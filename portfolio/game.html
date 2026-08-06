@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL VAULT — 5 Game Arcade</title>
+<style>
+  :root{
+    --bg:#0a0714;
+    --bg2:#120c22;
+    --panel:#150f28;
+    --neon-pink:#ff2e88;
+    --neon-cyan:#2ef5ff;
+    --neon-yellow:#f7ff2e;
+    --neon-green:#4dff9e;
+    --neon-purple:#b06bff;
+    --text:#e9e4ff;
+    --dim:#8b7fb8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:radial-gradient(circle at 50% 0%, #201640 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:'Courier New', monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+  }
+  .scanlines{
+    position:fixed;inset:0;pointer-events:none;z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+  }
+  header{text-align:center;margin-bottom:8px;}
+  h1{
+    font-family:'Arial Black', sans-serif;
+    font-size:clamp(2.2rem,7vw,3.8rem);
+    letter-spacing:6px;
+    background:linear-gradient(90deg,var(--neon-cyan),var(--neon-pink),var(--neon-yellow));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(46,245,255,0.2);
+  }
+  .tagline{color:var(--dim);letter-spacing:4px;font-size:0.75rem;margin-top:4px;text-transform:uppercase;}
+
+  /* ---- MENU SCREEN ---- */
+  #menuScreen{width:100%;max-width:980px;margin-top:30px;}
+  .gameGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+    gap:20px;
+  }
+  .gameCard{
+    background:rgba(18,12,34,0.7);
+    border:1px solid rgba(46,245,255,0.2);
+    border-radius:12px;
+    padding:22px 18px;
+    text-align:center;
+    cursor:pointer;
+    transition:all .2s;
+    position:relative;
+    overflow:hidden;
+  }
+  .gameCard:hover{
+    transform:translateY(-4px);
+    border-color:var(--accent, var(--neon-cyan));
+    box-shadow:0 10px 30px -10px var(--accent, var(--neon-cyan));
+  }
+  .gameCard .icon{font-size:2.6rem;margin-bottom:10px;display:block;}
+  .gameCard h3{
+    letter-spacing:2px;font-size:1rem;text-transform:uppercase;
+    color:var(--accent, var(--neon-cyan));margin-bottom:6px;
+  }
+  .gameCard p{color:var(--dim);font-size:0.75rem;line-height:1.4;}
+  .gameCard .best{
+    margin-top:10px;font-size:0.7rem;color:var(--neon-yellow);letter-spacing:1px;
+  }
+
+  /* ---- GAME SCREEN SHELL ---- */
+  #gameScreen{display:none;width:100%;max-width:600px;margin-top:20px;flex-direction:column;align-items:center;}
+  .gameTopBar{
+    width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+  }
+  .backBtn{
+    background:transparent;border:1px solid var(--neon-cyan);color:var(--neon-cyan);
+    padding:8px 16px;border-radius:4px;cursor:pointer;letter-spacing:2px;font-family:inherit;
+    font-size:0.75rem;text-transform:uppercase;transition:.15s;
+  }
+  .backBtn:hover{background:var(--neon-cyan);color:var(--bg);}
+  .gameTitle{letter-spacing:3px;font-size:1.1rem;text-transform:uppercase;color:var(--neon-pink);}
+
+  .panel{
+    background:rgba(18,12,34,0.7);
+    border:1px solid rgba(46,245,255,0.25);
+    border-radius:10px;
+    padding:18px;
+    width:100%;
+    box-shadow:0 0 30px rgba(46,245,255,0.06);
+  }
+
+  .btn{
+    background:transparent;border:1px solid var(--neon-cyan);color:var(--neon-cyan);
+    padding:10px 18px;letter-spacing:2px;font-family:inherit;font-size:0.8rem;
+    border-radius:4px;cursor:pointer;transition:.2s;text-transform:uppercase;margin-top:12px;
+  }
+  .btn:hover{background:var(--neon-cyan);color:var(--bg);box-shadow:0 0 16px var(--neon-cyan);}
+  .btn.pink{border-color:var(--neon-pink);color:var(--neon-pink);}
+  .btn.pink:hover{background:var(--neon-pink);color:var(--bg);box-shadow:0 0 16px var(--neon-pink);}
+
+  .hud{display:flex;justify-content:space-between;width:100%;margin-bottom:12px;font-size:0.85rem;letter-spacing:2px;}
+  .hud span{color:var(--neon-yellow);}
+
+  /* ---- SNAKE ---- */
+  #snakeCanvas{background:var(--bg2);border-radius:6px;display:block;margin:0 auto;box-shadow:0 0 25px rgba(255,46,136,0.12);}
+
+  /* ---- TIC TAC TOE ---- */
+  .tttGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:0 auto;}
+  .tttCell{
+    aspect-ratio:1;background:var(--bg2);border:1px solid rgba(46,245,255,0.2);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:2.2rem;cursor:pointer;
+    transition:.15s;color:var(--neon-cyan);
+  }
+  .tttCell:hover{background:rgba(46,245,255,0.08);}
+  .tttCell.x{color:var(--neon-cyan);}
+  .tttCell.o{color:var(--neon-pink);}
+  .tttMsg{text-align:center;margin-top:14px;color:var(--neon-yellow);letter-spacing:1px;min-height:1.4em;}
+
+  /* ---- MEMORY MATCH ---- */
+  .memGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:340px;margin:0 auto;}
+  .memCard{
+    aspect-ratio:1;background:var(--bg2);border:1px solid rgba(46,245,255,0.25);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:1.7rem;cursor:pointer;
+    transition:transform .2s;user-select:none;
+  }
+  .memCard.flipped, .memCard.matched{background:rgba(176,107,255,0.15);border-color:var(--neon-purple);}
+  .memCard.matched{opacity:0.55;cursor:default;}
+
+  /* ---- 2048 ---- */
+  #g2048Grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:0 auto;
+    background:var(--bg2);padding:8px;border-radius:8px;
+  }
+  .tile2048{
+    aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;
+    font-weight:bold;font-size:1.3rem;background:#1c1433;color:var(--dim);transition:.1s;
+  }
+  .t2{background:#221a3a;color:var(--neon-cyan);}
+  .t4{background:#241c40;color:var(--neon-cyan);}
+  .t8{background:#3a1f45;color:var(--neon-pink);}
+  .t16{background:#4a1f4f;color:var(--neon-pink);}
+  .t32{background:#5a1f50;color:#fff;}
+  .t64{background:#6a1f4f;color:#fff;}
+  .t128{background:#8b2fa0;color:#fff;font-size:1.1rem;}
+  .t256{background:#a52fb0;color:#fff;font-size:1.1rem;}
+  .t512{background:#c02fc0;color:#fff;font-size:1.1rem;}
+  .t1024{background:var(--neon-yellow);color:#1a0f2e;font-size:1rem;}
+  .t2048{background:var(--neon-green);color:#1a0f2e;font-size:1rem;box-shadow:0 0 16px var(--neon-green);}
+
+  /* ---- WHACK-A-MOLE ---- */
+  .moleGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:320px;margin:0 auto;}
+  .moleHole{
+    aspect-ratio:1;background:var(--bg2);border-radius:50%;border:2px solid rgba(46,245,255,0.25);
+    display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;overflow:hidden;
+  }
+  .moleHole.up{background:rgba(255,46,136,0.15);border-color:var(--neon-pink);}
+
+  footer{margin-top:36px;color:var(--dim);font-size:0.7rem;letter-spacing:2px;text-align:center;}
+
+  @media(max-width:480px){
+    .gameCard .icon{font-size:2.2rem;}
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<header>
+  <h1>PIXEL VAULT</h1>
+  <div class="tagline">// 5 games, 1 arcade — plain HTML/CSS/JS</div>
+</header>
+
+<!-- MENU -->
+<div id="menuScreen">
+  <div class="gameGrid">
+    <div class="gameCard" style="--accent:var(--neon-cyan)" onclick="openGame('snake')">
+      <span class="icon">🐍</span>
+      <h3>Neon Snake</h3>
+      <p>Classic snake — orb khao, badho, wall se bacho.</p>
+      <div class="best">BEST: <span id="bestSnake">0</span></div>
+    </div>
+    <div class="gameCard" style="--accent:var(--neon-pink)" onclick="openGame('ttt')">
+      <span class="icon">❌⭕</span>
+      <h3>Tic Tac Toe</h3>
+      <p>Computer ke against khelo — kya aap jeet paoge?</p>
+      <div class="best">WINS: <span id="bestTTT">0</span></div>
+    </div>
+    <div class="gameCard" style="--accent:var(--neon-purple)" onclick="openGame('memory')">
+      <span class="icon">🧠</span>
+      <h3>Memory Match</h3>
+      <p>Cards yaad rakho, pairs match karo, kam moves mein jeeto.</p>
+      <div class="best">BEST MOVES: <span id="bestMem">–</span></div>
+    </div>
+    <div class="gameCard" style="--accent:var(--neon-yellow)" onclick="openGame('g2048')">
+      <span class="icon">🔢</span>
+      <h3>2048</h3>
+      <p>Tiles slide karo, same numbers merge karo, 2048 tak pahunchо.</p>
+      <div class="best">BEST: <span id="best2048">0</span></div>
+    </div>
+    <div class="gameCard" style="--accent:var(--neon-green)" onclick="openGame('mole')">
+      <span class="icon">🔨</span>
+      <h3>Whack-a-Mole</h3>
+      <p>30 second mein jitne mole maro utna score karo!</p>
+      <div class="best">BEST: <span id="bestMole">0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME SHELL -->
+<div id="gameScreen">
+  <div class="gameTopBar">
+    <button class="backBtn" onclick="backToMenu()">← ARCADE</button>
+    <div class="gameTitle" id="gameTitle"></div>
+    <div style="width:90px;"></div>
+  </div>
+  <div class="panel" id="gamePanel"></div>
+</div>
+
+<footer>PIXEL VAULT ARCADE © 2026 — no dependencies, no server</footer>
+
+<script>
+/* ============ SHARED NAV ============ */
+const menuScreen = document.getElementById('menuScreen');
+const gameScreen = document.getElementById('gameScreen');
+const gamePanel = document.getElementById('gamePanel');
+const gameTitle = document.getElementById('gameTitle');
+
+let activeCleanup = null;
+
+const games = {
+  snake:  { title: 'Neon Snake',    init: initSnake },
+  ttt:    { title: 'Tic Tac Toe',   init: initTTT },
+  memory: { title: 'Memory Match',  init: initMemory },
+  g2048:  { title: '2048',          init: init2048 },
+  mole:   { title: 'Whack-a-Mole',  init: initMole }
+};
+
+function openGame(key){
+  if(activeCleanup) { activeCleanup(); activeCleanup = null; }
+  menuScreen.style.display = 'none';
+  gameScreen.style.display = 'flex';
+  gameTitle.textContent = games[key].title;
+  gamePanel.innerHTML = '';
+  activeCleanup = games[key].init(gamePanel) || null;
+}
+
+function backToMenu(){
+  if(activeCleanup) { activeCleanup(); activeCleanup = null; }
+  gameScreen.style.display = 'none';
+  menuScreen.style.display = 'block';
+  loadAllBests();
+}
+
+function loadBest(key, def){
+  return localStorage.getItem('pixelVault_' + key) || def;
+}
+function saveBest(key, val){
+  localStorage.setItem('pixelVault_' + key, val);
+}
+function loadAllBests(){
+  document.getElementById('bestSnake').textContent = loadBest('snake', 0);
+  document.getElementById('bestTTT').textContent = loadBest('ttt', 0);
+  document.getElementById('bestMem').textContent = loadBest('memory', '–');
+  document.getElementById('best2048').textContent = loadBest('g2048', 0);
+  document.getElementById('bestMole').textContent = loadBest('mole', 0);
+}
+loadAllBests();
+
+/* ============ 1. SNAKE ============ */
+function initSnake(panel){
+  panel.innerHTML = `
+    <div class="hud"><div>SCORE: <span id="snScore">0</span></div><div>BEST: <span id="snBest">${loadBest('snake',0)}</span></div></div>
+    <canvas id="snakeCanvas" width="320" height="320"></canvas>
+    <div style="text-align:center;"><button class="btn" id="snStart">▶ START</button></div>
+    <p style="text-align:center;color:var(--dim);font-size:0.72rem;margin-top:8px;">Arrow keys / WASD se control karo</p>
+  `;
+  const canvas = document.getElementById('snakeCanvas');
+  const ctx = canvas.getContext('2d');
+  const box = 20, cols = canvas.width/box, rows = canvas.height/box;
+  let snake, dir, food, score, loop, running=false;
+
+  function spawnFood(){
+    let f;
+    do{ f = {x:Math.floor(Math.random()*cols), y:Math.floor(Math.random()*rows)}; }
+    while(snake.some(s=>s.x===f.x && s.y===f.y));
+    return f;
+  }
+  function reset(){
+    snake=[{x:6,y:8},{x:5,y:8},{x:4,y:8}]; dir={x:1,y:0}; food=spawnFood(); score=0;
+    document.getElementById('snScore').textContent = score;
+  }
+  function draw(){
+    ctx.fillStyle='#120c22'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#f7ff2e'; ctx.shadowColor='#f7ff2e'; ctx.shadowBlur=10;
+    ctx.fillRect(food.x*box+3, food.y*box+3, box-6, box-6);
+    ctx.shadowBlur=0;
+    snake.forEach((s,i)=>{
+      ctx.fillStyle = i===0?'#2ef5ff':'#ff2e88';
+      ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = i===0?12:5;
+      ctx.fillRect(s.x*box+1, s.y*box+1, box-2, box-2);
+    });
+    ctx.shadowBlur=0;
+  }
+  function update(){
+    const head={x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+    if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){
+      clearInterval(loop); running=false;
+      const best = Math.max(parseInt(loadBest('snake',0)), score);
+      saveBest('snake', best);
+      document.getElementById('snBest').textContent = best;
+      ctx.fillStyle='rgba(10,7,20,0.85)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='#ff2e88'; ctx.font='bold 22px monospace'; ctx.textAlign='center';
+      ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+      return;
+    }
+    snake.unshift(head);
+    if(head.x===food.x && head.y===food.y){
+      score+=10; document.getElementById('snScore').textContent=score; food=spawnFood();
+    } else snake.pop();
+    draw();
+  }
+  function start(){
+    if(running) return;
+    reset(); running=true; draw();
+    loop = setInterval(update, 120);
+  }
+  function keyHandler(e){
+    const k=e.key.toLowerCase();
+    if((k==='arrowup'||k==='w') && dir.y===0) dir={x:0,y:-1};
+    else if((k==='arrowdown'||k==='s') && dir.y===0) dir={x:0,y:1};
+    else if((k==='arrowleft'||k==='a') && dir.x===0) dir={x:-1,y:0};
+    else if((k==='arrowright'||k==='d') && dir.x===0) dir={x:1,y:0};
+  }
+  document.addEventListener('keydown', keyHandler);
+  document.getElementById('snStart').addEventListener('click', start);
+  reset(); draw();
+  return () => { clearInterval(loop); document.removeEventListener('keydown', keyHandler); };
+}
+
+/* ============ 2. TIC TAC TOE ============ */
+function initTTT(panel){
+  panel.innerHTML = `
+    <div class="tttGrid" id="tttGrid"></div>
+    <div class="tttMsg" id="tttMsg">Aapki baari (X)</div>
+    <div style="text-align:center;"><button class="btn pink" id="tttReset">↻ NEW GAME</button></div>
+  `;
+  const grid = document.getElementById('tttGrid');
+  const msg = document.getElementById('tttMsg');
+  let board, gameOver;
+
+  function render(){
+    grid.innerHTML='';
+    board.forEach((v,i)=>{
+      const c = document.createElement('div');
+      c.className = 'tttCell' + (v==='X'?' x':v==='O'?' o':'');
+      c.textContent = v || '';
+      c.addEventListener('click', ()=>playerMove(i));
+      grid.appendChild(c);
+    });
+  }
+  function winner(b){
+    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,b1,c] of lines){ if(b[a] && b[a]===b[b1] && b[a]===b[c]) return b[a]; }
+    if(b.every(x=>x)) return 'draw';
+    return null;
+  }
+  function bestMove(){
+    // simple AI: win if possible, block if needed, else center/corner/random
+    const empties = board.map((v,i)=>v?null:i).filter(v=>v!==null);
+    for(const i of empties){ const b=[...board]; b[i]='O'; if(winner(b)==='O') return i; }
+    for(const i of empties){ const b=[...board]; b[i]='X'; if(winner(b)==='X') return i; }
+    if(!board[4]) return 4;
+    const corners=[0,2,6,8].filter(i=>!board[i]);
+    if(corners.length) return corners[Math.floor(Math.random()*corners.length)];
+    return empties[Math.floor(Math.random()*empties.length)];
+  }
+  function playerMove(i){
+    if(gameOver || board[i]) return;
+    board[i]='X'; render();
+    const w = winner(board);
+    if(w){ endGame(w); return; }
+    msg.textContent = 'Computer soch raha hai...';
+    setTimeout(()=>{
+      const m = bestMove(); board[m]='O'; render();
+      const w2 = winner(board);
+      if(w2) endGame(w2); else msg.textContent = 'Aapki baari (X)';
+    }, 450);
+  }
+  function endGame(w){
+    gameOver = true;
+    if(w==='draw') msg.textContent = "Draw! 🤝";
+    else if(w==='X'){ msg.textContent="Aap jeete! 🎉"; saveBest('ttt', parseInt(loadBest('ttt',0))+1); }
+    else msg.textContent = "Computer jeeta! 🤖";
+  }
+  function reset(){ board=Array(9).fill(null); gameOver=false; msg.textContent='Aapki baari (X)'; render(); }
+  document.getElementById('tttReset').addEventListener('click', reset);
+  reset();
+  return null;
+}
+
+/* ============ 3. MEMORY MATCH ============ */
+function initMemory(panel){
+  panel.innerHTML = `
+    <div class="hud"><div>MOVES: <span id="memMoves">0</span></div><div>BEST: <span id="memBest">${loadBest('memory','–')}</span></div></div>
+    <div class="memGrid" id="memGrid"></div>
+    <div style="text-align:center;"><button class="btn" id="memReset">↻ RESHUFFLE</button></div>
+  `;
+  const grid = document.getElementById('memGrid');
+  const emojis = ['🚀','🎮','👾','🛸','⭐','🔮','🎯','🧩'];
+  let cards, flipped, matchedCount, moves, lock;
+
+  function reset(){
+    const deck = [...emojis, ...emojis].map(e=>({e, flipped:false, matched:false}));
+    deck.sort(()=>Math.random()-0.5);
+    cards = deck; flipped=[]; matchedCount=0; moves=0; lock=false;
+    document.getElementById('memMoves').textContent = 0;
+    render();
+  }
+  function render(){
+    grid.innerHTML='';
+    cards.forEach((c,i)=>{
+      const el = document.createElement('div');
+      el.className = 'memCard' + (c.flipped?' flipped':'') + (c.matched?' matched':'');
+      el.textContent = (c.flipped||c.matched) ? c.e : '❔';
+      el.addEventListener('click', ()=>flip(i));
+      grid.appendChild(el);
+    });
+  }
+  function flip(i){
+    if(lock || cards[i].flipped || cards[i].matched) return;
+    cards[i].flipped = true; flipped.push(i); render();
+    if(flipped.length===2){
+      moves++; document.getElementById('memMoves').textContent = moves;
+      lock = true;
+      const [a,b] = flipped;
+      if(cards[a].e === cards[b].e){
+        cards[a].matched = cards[b].matched = true;
+        matchedCount++;
+        flipped=[]; lock=false; render();
+        if(matchedCount === emojis.length){
+          const best = loadBest('memory','–');
+          if(best==='–' || moves < parseInt(best)){ saveBest('memory', moves); document.getElementById('memBest').textContent = moves; }
+        }
+      } else {
+        setTimeout(()=>{
+          cards[a].flipped = cards[b].flipped = false;
+          flipped=[]; lock=false; render();
+        }, 700);
+      }
+    }
+  }
+  document.getElementById('memReset').addEventListener('click', reset);
+  reset();
+  return null;
+}
+
+/* ============ 4. 2048 ============ */
+function init2048(panel){
+  panel.innerHTML = `
+    <div class="hud"><div>SCORE: <span id="g48Score">0</span></div><div>BEST: <span id="g48Best">${loadBest('g2048',0)}</span></div></div>
+    <div id="g2048Grid"></div>
+    <div style="text-align:center;"><button class="btn pink" id="g48Reset">↻ NEW GAME</button></div>
+    <p style="text-align:center;color:var(--dim);font-size:0.72rem;margin-top:8px;">Arrow keys se tiles slide karo</p>
+  `;
+  const gridEl = document.getElementById('g2048Grid');
+  let grid, score;
+
+  function emptyGrid(){ return Array.from({length:4},()=>Array(4).fill(0)); }
+  function addTile(){
+    const empties=[];
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===0) empties.push([r,c]);
+    if(!empties.length) return;
+    const [r,c] = empties[Math.floor(Math.random()*empties.length)];
+    grid[r][c] = Math.random()<0.9 ? 2 : 4;
+  }
+  function render(){
+    gridEl.innerHTML='';
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      const v = grid[r][c];
+      const t = document.createElement('div');
+      t.className = 'tile2048' + (v?' t'+v:'');
+      t.textContent = v||'';
+      gridEl.appendChild(t);
+    }
+    document.getElementById('g48Score').textContent = score;
+  }
+  function slide(row){
+    let arr = row.filter(v=>v);
+    for(let i=0;i<arr.length-1;i++){
+      if(arr[i]===arr[i+1]){ arr[i]*=2; score+=arr[i]; arr.splice(i+1,1); }
+    }
+    while(arr.length<4) arr.push(0);
+    return arr;
+  }
+  function rotateGrid(g){
+    const n = emptyGrid();
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) n[c][3-r]=g[r][c];
+    return n;
+  }
+  function move(dir){
+    let moved=false;
+    let g = grid.map(r=>[...r]);
+    let rot = 0;
+    if(dir==='up') rot=3; else if(dir==='right') rot=2; else if(dir==='down') rot=1;
+    for(let i=0;i<rot;i++) g = rotateGrid(g);
+    const newG = g.map(row=>slide(row));
+    let result = newG;
+    for(let i=0;i<((4-rot)%4);i++) result = rotateGrid(result);
+    if(JSON.stringify(result) !== JSON.stringify(grid)) moved = true;
+    grid = result;
+    if(moved){
+      addTile(); render();
+      const best = Math.max(parseInt(loadBest('g2048',0)), score);
+      saveBest('g2048', best);
+      document.getElementById('g48Best').textContent = best;
+      if(!canMove()) alert('Game over! Score: '+score);
+    }
+  }
+  function canMove(){
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      if(grid[r][c]===0) return true;
+      if(c<3 && grid[r][c]===grid[r][c+1]) return true;
+      if(r<3 && grid[r][c]===grid[r+1][c]) return true;
+    }
+    return false;
+  }
+  function reset(){ grid=emptyGrid(); score=0; addTile(); addTile(); render(); }
+  function keyHandler(e){
+    const k=e.key.toLowerCase();
+    if(k==='arrowup'||k==='w') move('up');
+    else if(k==='arrowdown'||k==='s') move('down');
+    else if(k==='arrowleft'||k==='a') move('left');
+    else if(k==='arrowright'||k==='d') move('right');
+  }
+  document.addEventListener('keydown', keyHandler);
+  document.getElementById('g48Reset').addEventListener('click', reset);
+  reset();
+  return () => document.removeEventListener('keydown', keyHandler);
+}
+
+/* ============ 5. WHACK-A-MOLE ============ */
+function initMole(panel){
+  panel.innerHTML = `
+    <div class="hud"><div>SCORE: <span id="moleScore">0</span></div><div>TIME: <span id="moleTime">30</span>s</div><div>BEST: <span id="moleBest">${loadBest('mole',0)}</span></div></div>
+    <div class="moleGrid" id="moleGrid"></div>
+    <div style="text-align:center;"><button class="btn" id="moleStart">▶ START (30s)</button></div>
+  `;
+  const gridEl = document.getElementById('moleGrid');
+  let holes = [], score=0, timeLeft=30, moleTimer=null, countdownTimer=null, activeHole=-1, running=false;
+
+  for(let i=0;i<9;i++){
+    const h = document.createElement('div');
+    h.className = 'moleHole';
+    h.addEventListener('click', ()=>whack(i));
+    gridEl.appendChild(h);
+    holes.push(h);
+  }
+  function popRandom(){
+    holes.forEach(h=>h.classList.remove('up'));
+    holes.forEach(h=>h.textContent='');
+    activeHole = Math.floor(Math.random()*9);
+    holes[activeHole].classList.add('up');
+    holes[activeHole].textContent = '🐹';
+  }
+  function whack(i){
+    if(!running) return;
+    if(i===activeHole){
+      score+=10; document.getElementById('moleScore').textContent=score;
+      holes[i].classList.remove('up'); holes[i].textContent='💥';
+      activeHole=-1;
+      setTimeout(()=>{ if(running){ holes[i].textContent=''; } }, 150);
+    }
+  }
+  function start(){
+    if(running) return;
+    running=true; score=0; timeLeft=30;
+    document.getElementById('moleScore').textContent=0;
+    document.getElementById('moleTime').textContent=30;
+    moleTimer = setInterval(popRandom, 700);
+    countdownTimer = setInterval(()=>{
+      timeLeft--; document.getElementById('moleTime').textContent = timeLeft;
+      if(timeLeft<=0) endGame();
+    }, 1000);
+  }
+  function endGame(){
+    running=false;
+    clearInterval(moleTimer); clearInterval(countdownTimer);
+    holes.forEach(h=>{h.classList.remove('up'); h.textContent='';});
+    const best = Math.max(parseInt(loadBest('mole',0)), score);
+    saveBest('mole', best);
+    document.getElementById('moleBest').textContent = best;
+    alert('Time up! Score: ' + score);
+  }
+  document.getElementById('moleStart').addEventListener('click', start);
+  return () => { clearInterval(moleTimer); clearInterval(countdownTimer); };
+}
+</script>
+</body>
+</html>

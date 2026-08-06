@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - White Valley Cafe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7b4e00;
+            --secondary-color: #f9ba3c;
+            --dark-color: #0b110f;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--dark-color) !important;
+        }
+        
+        .navbar-brand img {
+            border-radius: 50%;
+        }
+        
+        .payment-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .payment-header {
+            background: linear-gradient(135deg, var(--primary-color), #005a30);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .payment-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .payment-option.active {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 123, 67, 0.1);
+        }
+        
+        .payment-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .payment-form {
+            padding: 30px;
+            display: none;
+        }
+        
+        .payment-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 67, 0.25);
+        }
+        
+        .card-input-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .card-input-group .form-group {
+            flex: 1;
+        }
+        
+        .btn-pay {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pay:hover {
+            background-color: #5a3500;
+            transform: translateY(-2px);
+        }
+        
+        .btn-pay:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .order-summary {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .upi-ids {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .upi-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upi-btn:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .upi-btn.active {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 123, 67, 0.1);
+        }
+        
+        .success-screen {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .bill-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bill-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .bill-items {
+            margin-bottom: 20px;
+        }
+        
+        .bill-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+        
+        .btn-back-to-menu {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .btn-back-to-menu:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .payment-methods {
+                flex-direction: column;
+            }
+            
+            .card-input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .upi-ids {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="home.html">
+                <img src="WhiteValley Logo.jpeg" alt="Logo" width="40" class="me-2"> 
+                <div>
+                    <label style="font-family: 'Times New Roman', Times, serif; font-size: larger; display: block;">White Valley Cafe</label>
+                    <small style="font-size:12px; color: rgb(237, 206, 172); display: block; margin-top: -7px; font-family:cursive;">Elevated Coffee Moments</small>
+                </div>
+            </a>
+            <!-- Back to Menu button in navbar -->
+            <div class="d-none d-lg-block">
+                <button class="btn btn-outline-light" onclick="goToMenu()">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Menu
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Payment Container -->
+    <div class="container">
+        <div class="payment-container">
+            <!-- Payment Header -->
+            <div class="payment-header">
+                <h2><i class="fas fa-lock me-2"></i>Secure Payment</h2>
+                <p>Complete your purchase securely</p>
+            </div>
+
+            <!-- Payment Methods Selection -->
+            <div class="payment-methods">
+                <div class="payment-option active" data-method="card">
+                    <i class="fas fa-credit-card payment-icon"></i>
+                    <h5>Debit/Credit Card</h5>
+                </div>
+                <div class="payment-option" data-method="upi">
+                    <i class="fas fa-mobile-alt payment-icon"></i>
+                    <h5>UPI Payment</h5>
+                </div>
+                <div class="payment-option" data-method="cod">
+                    <i class="fas fa-money-bill-wave payment-icon"></i>
+                    <h5>Cash on Delivery</h5>
+                </div>
+            </div>
+
+            <!-- Card Payment Form -->
+            <div id="card-form" class="payment-form active">
+                <h4 class="mb-4">Card Details</h4>
+                <form id="cardPaymentForm">
+                    <div class="form-group">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 1234 5678" maxlength="16">
+                        <div class="error-message" id="cardNumberError">Please enter a valid 16-digit card number</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-control" id="cardName" placeholder="Your good name">
+                        <div class="error-message" id="cardNameError">Please enter the name on card</div>
+                    </div>
+                    
+                    <div class="card-input-group">
+                        <div class="form-group">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                            <div class="error-message" id="expiryError">Please enter a valid expiry date (MM/YY)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">CVV</label>
+                            <input type="password" class="form-control" id="cvv" placeholder="123" maxlength="3">
+                            <div class="error-message" id="cvvError">Please enter a valid 3-digit CVV</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-pay" id="cardPayBtn">
+                        <i class="fas fa-lock me-2"></i>Pay Now
+                    </button>
+                </form>
+            </div>
+
+            <!-- UPI Payment Form -->
+            <div id="upi-form" class="payment-form">
+                <h4 class="mb-4">UPI Payment</h4>
+                <form id="upiPaymentForm">
+                    <div class="form-group">
+                        <label class="form-label">Enter UPI ID</label>
+                        <input type="text" class="form-control" id="upiId" placeholder="username@upi">
+                        <div class="error-message" id="upiIdError">Please enter a valid UPI ID</div>
+                    </div>
+                    
+                    
+                    <button type="submit" class="btn-pay" id="upiPayBtn">
+                        <i class="fas fa-qrcode me-2"></i>Pay via UPI
+                    </button>
+                </form>
+            </div>
+
+            <!-- COD Form -->
+            <div id="cod-form" class="payment-form">
+                <h4 class="mb-4">Cash on Delivery</h4>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    You'll pay in cash when your order arrives. Please keep exact change ready.
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Delivery Instructions (Optional)</label>
+                    <textarea class="form-control" id="deliveryInstructions" rows="2" placeholder="Any special delivery instructions..."></textarea>
+                </div>
+                
+                <button class="btn-pay" id="codBtn">
+                    <i class="fas fa-truck me-2"></i>Place Order via COD
+                </button>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h5>Order Summary</h5>
+                <div id="order-items"></div>
+                <div class="order-total text-end mt-3">
+                    Total: ₹ <span id="order-total">0.00</span>
+                </div>
+            </div>
+
+            <!-- Back to Menu Button (below payment form) -->
+            <div class="text-center mt-4 p-3">
+                <button class="btn-back-to-menu" onclick="goToMenu()">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Menu
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Screen (Hidden Initially) -->
+        <div id="success-screen" class="success-screen payment-container">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Payment Successful!</h2>
+            <p class="lead">Your order has been placed successfully.</p>
+            <p>Order ID: <strong id="order-id">WV2024001</strong></p>
+            <p>Estimated Delivery: <strong id="delivery-time">30-40 minutes</strong></p>
+            <button class="btn-pay mt-3" onclick="generateBill()">
+                <i class="fas fa-receipt me-2"></i>Generate Bill
+            </button>
+            <div class="mt-4">
+                <button class="btn-back-to-menu" onclick="goToMenu()">
+                    <i class="fas fa-utensils me-2"></i>Back to Menu
+                </button>
+            </div>
+        </div>
+
+        <!-- Bill Container (Hidden Initially) -->
+        <div id="bill-container" class="bill-container" style="display: none;">
+            <!-- Bill will be generated here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>Thank you for choosing us!</p>
+            <p> ~White Valley .</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sample order data (in real app, this would come from localStorage or backend)
+        let cartItems = JSON.parse(localStorage.getItem('cart')) || [
+            { name: "Pink Drink", price: 367.50, quantity: 1 },
+            { name: "Cold Coffee", price: 320.25, quantity: 1 },
+            { name: "New York Cheesecake", price: 283.50, quantity: 1 }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrderSummary();
+            setupPaymentMethods();
+            setupFormValidations();
+            setupUPIButtons();
+        });
+
+        // Load order summary
+        function loadOrderSummary() {
+            const orderItemsDiv = document.getElementById('order-items');
+            let total = 0;
+            
+            orderItemsDiv.innerHTML = '';
+            
+            cartItems.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <span>${item.name} × ${item.quantity}</span>
+                    <span>₹${itemTotal.toFixed(2)}</span>
+                `;
+                orderItemsDiv.appendChild(itemDiv);
+            });
+            
+            // Add GST (18%)
+            const gst = total * 0.18;
+            total += gst;
+            
+            const gstDiv = document.createElement('div');
+            gstDiv.className = 'order-item';
+            gstDiv.innerHTML = `
+                <span>GST (18%)</span>
+                <span>₹${gst.toFixed(2)}</span>
+            `;
+            orderItemsDiv.appendChild(gstDiv);
+            
+            document.getElementById('order-total').textContent = total.toFixed(2);
+            
+            // Store total for later use
+            localStorage.setItem('orderTotal', total.toFixed(2));
+        }
+
+        // Setup payment method switching
+        function setupPaymentMethods() {
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const paymentForms = document.querySelectorAll('.payment-form');
+            
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    paymentOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Hide all forms
+                    paymentForms.forEach(form => form.classList.remove('active'));
+                    
+                    // Show selected form
+                    const method = this.getAttribute('data-method');
+                    document.getElementById(`${method}-form`).classList.add('active');
+                });
+            });
+        }
+
+        // Setup form validations
+        function setupFormValidations() {
+            // Card number formatting and validation
+            document.getElementById('cardNumber').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+                value = value.replace(/(\d{4})/g, '$1 ').trim();
+                e.target.value = value.substring(0, 19);
+                
+                if (value.replace(/\s+/g, '').length === 16) {
+                    hideError('cardNumberError');
+                }
+            });
+
+            // Expiry date formatting
+            document.getElementById('expiryDate').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value.substring(0, 5);
+                
+                if (validateExpiryDate(value)) {
+                    hideError('expiryError');
+                }
+            });
+
+            // CVV validation
+            document.getElementById('cvv').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                e.target.value = value.substring(0, 3);
+                
+                if (value.length === 3) {
+                    hideError('cvvError');
+                }
+            });
+
+            // UPI ID validation
+            document.getElementById('upiId').addEventListener('input', function(e) {
+                if (validateUPI(e.target.value)) {
+                    hideError('upiIdError');
+                }
+            });
+
+            // Card form submission
+            document.getElementById('cardPaymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateCardForm()) {
+                    processPayment('card');
+                }
+            });
+
+            // UPI form submission
+            document.getElementById('upiPaymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateUPIForm()) {
+                    processPayment('upi');
+                }
+            });
+
+            // COD button
+            document.getElementById('codBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to place order via Cash on Delivery?')) {
+                    processPayment('cod');
+                }
+            });
+        }
+
+        // Setup UPI buttons
+        function setupUPIButtons() {
+            document.querySelectorAll('.upi-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.upi-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('upiId').value = this.getAttribute('data-upi');
+                    hideError('upiIdError');
+                });
+            });
+        }
+
+        // Validation functions
+        function validateCardForm() {
+            let isValid = true;
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s+/g, '');
+            const cardName = document.getElementById('cardName').value.trim();
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+                showError('cardNumberError');
+                isValid = false;
+            }
+
+            if (cardName.length < 3) {
+                showError('cardNameError');
+                isValid = false;
+            }
+
+            if (!validateExpiryDate(expiryDate)) {
+                showError('expiryError');
+                isValid = false;
+            }
+
+            if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
+                showError('cvvError');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateUPIForm() {
+            const upiId = document.getElementById('upiId').value.trim();
+            if (!validateUPI(upiId)) {
+                showError('upiIdError');
+                return false;
+            }
+            return true;
+        }
+
+        function validateExpiryDate(date) {
+            if (!/^\d{2}\/\d{2}$/.test(date)) return false;
+            
+            const [month, year] = date.split('/').map(Number);
+            const currentYear = new Date().getFullYear() % 100;
+            const currentMonth = new Date().getMonth() + 1;
+            
+            if (month < 1 || month > 12) return false;
+            if (year < currentYear || (year === currentYear && month < currentMonth)) return false;
+            
+            return true;
+        }
+
+        function validateUPI(upiId) {
+            const upiRegex = /^[a-zA-Z0-9.\-_]{2,49}@[a-zA-Z]{2,}$/;
+            return upiRegex.test(upiId);
+        }
+
+        function showError(errorId) {
+            document.getElementById(errorId).style.display = 'block';
+        }
+
+        function hideError(errorId) {
+            document.getElementById(errorId).style.display = 'none';
+        }
+
+        // Process payment
+        function processPayment(method) {
+            // Show loading
+            const btn = method === 'card' ? document.getElementById('cardPayBtn') :
+                       method === 'upi' ? document.getElementById('upiPayBtn') :
+                       document.getElementById('codBtn');
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            btn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                // Show success screen
+                document.querySelector('.payment-container').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+                
+                // Generate random order ID
+                const orderId = 'WV' + Date.now().toString().substring(8);
+                document.getElementById('order-id').textContent = orderId;
+                
+                // Save order details
+                const orderDetails = {
+                    orderId: orderId,
+                    paymentMethod: method,
+                    items: cartItems,
+                    total: localStorage.getItem('orderTotal'),
+                    timestamp: new Date().toISOString(),
+                    deliveryTime: new Date(Date.now() + 40 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                };
+                
+                localStorage.setItem('lastOrder', JSON.stringify(orderDetails));
+                
+                // Clear cart
+                localStorage.removeItem('cart');
+            }, 2000);
+        }
+
+        // Generate bill
+        function generateBill() {
+            const orderDetails = JSON.parse(localStorage.getItem('lastOrder')) || {
+                orderId: 'WV' + Date.now().toString().substring(8),
+                paymentMethod: 'card',
+                items: cartItems,
+                total: localStorage.getItem('orderTotal'),
+                timestamp: new Date().toLocaleString(),
+                deliveryTime: new Date(Date.now() + 40 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            const billContainer = document.getElementById('bill-container');
+            billContainer.innerHTML = `
+                <div class="bill-header">
+                    <h3>White Valley Cafe</h3>
+                    <p>Elevated Coffee Moments</p>
+                    <p>Order Receipt</p>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Order ID:</strong> ${orderDetails.orderId}
+                    </div>
+                    <div class="col-6 text-end">
+                        <strong>Date:</strong> ${new Date(orderDetails.timestamp).toLocaleDateString()}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Payment Method:</strong> ${orderDetails.paymentMethod.toUpperCase()}
+                    </div>
+                    <div class="col-6 text-end">
+                        <strong>Time:</strong> ${new Date(orderDetails.timestamp).toLocaleTimeString()}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="bill-items">
+                    <div class="row fw-bold mb-2">
+                        <div class="col-6">Item</div>
+                        <div class="col-2 text-center">Qty</div>
+                        <div class="col-2 text-end">Price</div>
+                        <div class="col-2 text-end">Total</div>
+                    </div>
+                    
+                    ${orderDetails.items.map(item => `
+                        <div class="row mb-2">
+                            <div class="col-6">${item.name}</div>
+                            <div class="col-2 text-center">${item.quantity}</div>
+                            <div class="col-2 text-end">₹${item.price.toFixed(2)}</div>
+                            <div class="col-2 text-end">₹${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-2">
+                    <div class="col-8">Subtotal</div>
+                    <div class="col-4 text-end">₹${(parseFloat(orderDetails.total) / 1.18).toFixed(2)}</div>
+                </div>
+                
+                <div class="row mb-2">
+                    <div class="col-8">GST (18%)</div>
+                    <div class="col-4 text-end">₹${(parseFloat(orderDetails.total) * 0.18 / 1.18).toFixed(2)}</div>
+                </div>
+                
+                <div class="bill-total row">
+                    <div class="col-8">Total Amount</div>
+                    <div class="col-4 text-end">₹${parseFloat(orderDetails.total).toFixed(2)}</div>
+                </div>
+                
+                <hr>
+                
+                <div class="mt-4">
+                    <p><strong>Delivery Time:</strong> ${orderDetails.deliveryTime}</p>
+                    <p class="text-muted small">Thank you for your order! Please show this receipt for order pickup.</p>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary me-2" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Bill
+                    </button>
+                    <button class="btn btn-success me-2" onclick="downloadBill()">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="goToMenu()">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Menu
+                    </button>
+                </div>
+            `;
+            
+            billContainer.style.display = 'block';
+            billContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Download bill as PDF (simulated)
+        function downloadBill() {
+            alert(' In a real application, this would generate a PDF.');
+        }
+
+        // Go back to menu function
+        function goToMenu() {
+            if (confirm('Are you sure you want to go back to menu? Your cart will be cleared.')) {
+                // Clear cart if going back to menu
+                localStorage.removeItem('cart');
+                // Redirect to menu page
+                window.location.href = 'Menu.html'; 
+            }
+        }
+    </script>
+</body>
+</html>
