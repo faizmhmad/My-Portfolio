@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S — Personal AI Interface</title>
+<style>
+  :root{
+    --void:#040608;
+    --panel:#081014;
+    --arc:#4fd8ff;
+    --arc-dim:#1c4a55;
+    --amber:#ffb84f;
+    --text:#cfeff5;
+    --dim:#5f8a95;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 50% 30%, #0a1a20 0%, var(--void) 70%);
+    color:var(--text);
+    font-family:'Trebuchet MS', Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:30px 16px 60px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .grid-overlay{
+    position:fixed;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(79,216,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,216,255,0.035) 1px, transparent 1px);
+    background-size:40px 40px;
+    z-index:0;
+  }
+
+  header{text-align:center;z-index:1;margin-bottom:10px;}
+  .eyebrow{color:var(--amber);letter-spacing:6px;font-size:0.7rem;text-transform:uppercase;margin-bottom:6px;}
+  h1{
+    font-size:clamp(2rem,7vw,3.4rem);
+    font-weight:300;
+    letter-spacing:10px;
+    color:var(--arc);
+    text-shadow:0 0 20px rgba(79,216,255,0.6), 0 0 60px rgba(79,216,255,0.2);
+  }
+  .status-line{
+    margin-top:8px;
+    font-size:0.75rem;
+    color:var(--dim);
+    letter-spacing:2px;
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .status-line .ok{color:#7ee08a;}
+
+  .core-wrap{
+    z-index:1;
+    margin:26px 0 10px;
+    position:relative;
+    width:180px;height:180px;
+  }
+  .ring{
+    position:absolute;inset:0;
+    border-radius:50%;
+    border:2px solid var(--arc-dim);
+  }
+  .ring.r1{animation:spin 12s linear infinite;border-top-color:var(--arc);border-right-color:var(--arc);}
+  .ring.r2{inset:18px;animation:spin 8s linear infinite reverse;border-bottom-color:var(--amber);}
+  .ring.r3{inset:36px;animation:spin 5s linear infinite;border-left-color:var(--arc);}
+  .core{
+    position:absolute;inset:64px;
+    border-radius:50%;
+    background:radial-gradient(circle, #bdf3ff 0%, var(--arc) 40%, #0a2830 90%);
+    box-shadow:0 0 40px var(--arc), 0 0 90px rgba(79,216,255,0.4);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes pulse{
+    0%,100%{transform:scale(1);opacity:1;}
+    50%{transform:scale(1.08);opacity:0.85;}
+  }
+  .core.speaking{
+    animation:speakPulse 0.5s ease-in-out infinite;
+  }
+  @keyframes speakPulse{
+    0%,100%{transform:scale(1);box-shadow:0 0 40px var(--arc), 0 0 90px rgba(79,216,255,0.4);}
+    50%{transform:scale(1.16);box-shadow:0 0 70px var(--arc), 0 0 140px rgba(79,216,255,0.7);}
+  }
+
+  .interface{
+    z-index:1;
+    width:100%;
+    max-width:620px;
+    background:rgba(8,16,20,0.75);
+    border:1px solid rgba(79,216,255,0.25);
+    border-radius:10px;
+    box-shadow:0 0 40px rgba(79,216,255,0.08), inset 0 0 30px rgba(79,216,255,0.02);
+    backdrop-filter:blur(6px);
+    overflow:hidden;
+  }
+  .interface-head{
+    padding:12px 18px;
+    border-bottom:1px solid rgba(79,216,255,0.2);
+    display:flex;
+    justify-content:space-between;
+    font-size:0.72rem;
+    letter-spacing:2px;
+    color:var(--dim);
+  }
+  .log{
+    height:360px;
+    overflow-y:auto;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .line{font-size:0.92rem;line-height:1.5;}
+  .line .tag{font-weight:bold;letter-spacing:1px;margin-right:8px;}
+  .line.jarvis .tag{color:var(--arc);}
+  .line.user .tag{color:var(--amber);}
+  .line.jarvis{color:var(--text);}
+  .line.user{color:#e8d9c0;text-align:right;}
+  .line.user .tag{margin-right:0;margin-left:8px;}
+
+  .cursor-blink{
+    display:inline-block;width:8px;height:14px;background:var(--arc);
+    animation:blink 1s step-end infinite;vertical-align:middle;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .inputRow{
+    display:flex;
+    border-top:1px solid rgba(79,216,255,0.2);
+  }
+  .inputRow span.prompt{
+    padding:14px 10px 14px 18px;
+    color:var(--arc);
+    font-weight:bold;
+  }
+  .inputRow input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--text);
+    font-family:inherit;
+    font-size:0.95rem;
+    padding:14px 8px;
+  }
+  .inputRow button{
+    background:var(--arc);
+    border:none;
+    padding:0 24px;
+    color:#04181c;
+    font-weight:bold;
+    letter-spacing:2px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .inputRow button:hover{background:#8de8ff;}
+
+  .quickRow{
+    display:flex;
+    gap:8px;
+    padding:10px 18px;
+    flex-wrap:wrap;
+    border-top:1px solid rgba(79,216,255,0.1);
+  }
+  .quickRow .q{
+    font-size:0.72rem;
+    letter-spacing:1px;
+    color:var(--arc);
+    border:1px solid var(--arc-dim);
+    padding:5px 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .quickRow .q:hover{background:rgba(79,216,255,0.15);}
+
+  footer{margin-top:26px;color:var(--dim);font-size:0.7rem;letter-spacing:2px;z-index:1;}
+
+  .modalOverlay{
+    position:fixed;inset:0;
+    background:rgba(2,4,6,0.85);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:20;
+    padding:16px;
+  }
+  .modalOverlay.show{display:flex;}
+  .modal{
+    background:var(--panel);
+    border:1px solid rgba(79,216,255,0.3);
+    border-radius:10px;
+    padding:24px;
+    width:100%;
+    max-width:420px;
+    box-shadow:0 0 60px rgba(79,216,255,0.15);
+  }
+  .modal h2{color:var(--arc);font-weight:300;letter-spacing:2px;margin-bottom:10px;font-size:1.3rem;}
+  .modalNote{color:var(--dim);font-size:0.78rem;line-height:1.5;margin-bottom:16px;}
+  .modal label{display:block;color:var(--dim);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin:12px 0 4px;}
+  .modal select, .modal input{
+    width:100%;
+    padding:10px 12px;
+    background:#040b0d;
+    border:1px solid rgba(79,216,255,0.25);
+    color:var(--text);
+    border-radius:5px;
+    font-family:inherit;
+    font-size:0.88rem;
+    outline:none;
+  }
+  .modal select:focus, .modal input:focus{border-color:var(--arc);}
+  .modalBtnRow{display:flex;gap:10px;margin-top:20px;}
+  .btn-primary, .btn-secondary{
+    flex:1;
+    padding:10px;
+    border-radius:5px;
+    border:none;
+    cursor:pointer;
+    font-family:inherit;
+    letter-spacing:1px;
+    font-size:0.8rem;
+  }
+  .btn-primary{background:var(--arc);color:#04181c;font-weight:bold;}
+  .btn-primary:hover{background:#8de8ff;}
+  .btn-secondary{background:transparent;border:1px solid var(--arc-dim);color:var(--dim);}
+  .btn-secondary:hover{border-color:var(--arc);color:var(--arc);}
+  .modalStatus{margin-top:12px;font-size:0.78rem;color:#7ee08a;min-height:1em;}
+  .modalStatus.error{color:#ff6b6b;}
+</style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<header>
+  <div class="eyebrow">Personal Intelligence System</div>
+  <h1>J.A.R.V.I.S</h1>
+  <div class="status-line">
+    <span><span class="ok">●</span> SYSTEMS ONLINE</span>
+    <span>PROTOCOL: STANDARD</span>
+    <span id="clock">--:--:--</span>
+    <span id="voiceToggle" style="cursor:pointer;color:var(--amber);">🔊 VOICE: ON</span>
+    <span id="settingsBtn" style="cursor:pointer;color:var(--arc);">⚙ AI SETUP</span>
+  </div>
+</header>
+
+<div class="core-wrap">
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
+  <div class="core"></div>
+</div>
+
+<div class="interface">
+  <div class="interface-head">
+    <span>UPLINK: SECURE</span>
+    <span>SESSION LOG</span>
+  </div>
+  <div class="log" id="log">
+    <div class="line jarvis"><span class="tag">JARVIS:</span>Namaste, sir. Sab systems fully operational hain. Aap mujhse kya poochna chahenge?<span class="cursor-blink"></span></div>
+  </div>
+  <div class="quickRow">
+    <div class="q" data-msg="Weather kaisa hai?">Weather?</div>
+    <div class="q" data-msg="System status batao">System status</div>
+    <div class="q" data-msg="Ek motivational quote sunao">Motivate me</div>
+    <div class="q" data-msg="Tum kaun ho?">Who are you?</div>
+  </div>
+  <div class="inputRow">
+    <span class="prompt">&gt;</span>
+    <input type="text" id="jInput" placeholder="Command type karein..." autocomplete="off">
+    <button id="jSend">TRANSMIT</button>
+  </div>
+</div>
+
+<footer>J.A.R.V.I.S INTERFACE © 2026 — plain HTML / CSS / JS, no backend</footer>
+
+<div class="modalOverlay" id="modalOverlay">
+  <div class="modal">
+    <h2>⚙ AI Configuration</h2>
+    <p class="modalNote">Apni API key yahan daalo — ye sirf aapke browser mein (localStorage) save hoti hai, kahin bhi bheji nahi jaati except seedha AI provider ko.</p>
+
+    <label>Provider</label>
+    <select id="providerSelect">
+      <option value="anthropic">Anthropic Claude</option>
+      <option value="openai">OpenAI (may need a proxy due to CORS)</option>
+    </select>
+
+    <label>API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-... ya sk-ant-...">
+
+    <label>Model</label>
+    <input type="text" id="modelInput" placeholder="e.g. claude-sonnet-4-5 or gpt-4o-mini">
+
+    <div class="modalBtnRow">
+      <button id="saveSettingsBtn" class="btn-primary">Save</button>
+      <button id="clearSettingsBtn" class="btn-secondary">Clear</button>
+      <button id="closeSettingsBtn" class="btn-secondary">Close</button>
+    </div>
+    <p class="modalStatus" id="modalStatus"></p>
+  </div>
+</div>
+
+<script>
+function updateClock(){
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN', {hour12:false});
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+const log = document.getElementById('log');
+const input = document.getElementById('jInput');
+const sendBtn = document.getElementById('jSend');
+const coreEl = document.querySelector('.core');
+const voiceToggle = document.getElementById('voiceToggle');
+const settingsBtn = document.getElementById('settingsBtn');
+const modalOverlay = document.getElementById('modalOverlay');
+const providerSelect = document.getElementById('providerSelect');
+const apiKeyInput = document.getElementById('apiKeyInput');
+const modelInput = document.getElementById('modelInput');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const clearSettingsBtn = document.getElementById('clearSettingsBtn');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const modalStatus = document.getElementById('modalStatus');
+
+const defaultModels = { anthropic: 'claude-sonnet-4-5', openai: 'gpt-4o-mini' };
+
+function loadSettings(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('jarvisAiSettings') || 'null');
+    if(saved){
+      providerSelect.value = saved.provider || 'anthropic';
+      apiKeyInput.value = saved.apiKey || '';
+      modelInput.value = saved.model || defaultModels[saved.provider || 'anthropic'];
+      return saved;
+    }
+  }catch(e){}
+  modelInput.value = defaultModels.anthropic;
+  return null;
+}
+let aiSettings = loadSettings();
+
+function openModal(){
+  modalStatus.textContent = aiSettings && aiSettings.apiKey
+    ? '✓ AI connected — ' + aiSettings.provider + ' (' + aiSettings.model + ')'
+    : 'Abhi koi API key set nahi hai — offline demo mode chal raha hai.';
+  modalStatus.classList.remove('error');
+  modalOverlay.classList.add('show');
+}
+function closeModal(){ modalOverlay.classList.remove('show'); }
+
+settingsBtn.addEventListener('click', openModal);
+closeSettingsBtn.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeModal(); });
+
+providerSelect.addEventListener('change', ()=>{
+  if(!modelInput.value.trim()) modelInput.value = defaultModels[providerSelect.value];
+});
+
+saveSettingsBtn.addEventListener('click', ()=>{
+  const key = apiKeyInput.value.trim();
+  if(!key){
+    modalStatus.textContent = 'API key khali nahi ho sakti.';
+    modalStatus.classList.add('error');
+    return;
+  }
+  aiSettings = {
+    provider: providerSelect.value,
+    apiKey: key,
+    model: modelInput.value.trim() || defaultModels[providerSelect.value]
+  };
+  localStorage.setItem('jarvisAiSettings', JSON.stringify(aiSettings));
+  modalStatus.classList.remove('error');
+  modalStatus.textContent = '✓ Saved! Ab JARVIS real AI se baat karega.';
+  conversationHistory = [];
+});
+
+clearSettingsBtn.addEventListener('click', ()=>{
+  localStorage.removeItem('jarvisAiSettings');
+  aiSettings = null;
+  apiKeyInput.value = '';
+  modalStatus.classList.remove('error');
+  modalStatus.textContent = 'API key clear kar di gayi. Offline demo mode chalu.';
+  conversationHistory = [];
+});
+
+let voiceOn = true;
+let jarvisVoiceEn = null;
+let jarvisVoiceHi = null;
+
+function pickVoice(){
+  const voices = speechSynthesis.getVoices();
+  // English (or Indian-English) voice, preferably male-sounding
+  jarvisVoiceEn =
+    voices.find(v => /en-IN/i.test(v.lang)) ||
+    voices.find(v => /Google UK English Male/i.test(v.name)) ||
+    voices.find(v => /Male/i.test(v.name) && /en/i.test(v.lang)) ||
+    voices.find(v => /en/i.test(v.lang)) ||
+    voices[0] || null;
+  // Hindi voice
+  jarvisVoiceHi =
+    voices.find(v => /hi-IN/i.test(v.lang)) ||
+    voices.find(v => /hindi/i.test(v.name)) ||
+    jarvisVoiceEn;
+}
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = pickVoice;
+  pickVoice();
+}
+
+function speak(text, lang){
+  if(!voiceOn || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  if(lang === 'hi'){
+    utter.voice = jarvisVoiceHi;
+    utter.lang = 'hi-IN';
+  } else {
+    utter.voice = jarvisVoiceEn;
+    utter.lang = lang === 'en' ? 'en-US' : 'en-IN';
+  }
+  utter.rate = 0.98;
+  utter.pitch = 0.85;
+  utter.onstart = () => coreEl.classList.add('speaking');
+  utter.onend = () => coreEl.classList.remove('speaking');
+  utter.onerror = () => coreEl.classList.remove('speaking');
+  speechSynthesis.speak(utter);
+}
+
+voiceToggle.addEventListener('click', () => {
+  voiceOn = !voiceOn;
+  voiceToggle.textContent = voiceOn ? '🔊 VOICE: ON' : '🔇 VOICE: OFF';
+  if(!voiceOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+});
+
+const quotes = {
+  hinglish: [
+    "Sir, the best way to predict the future is to build it yourself.",
+    "Har failure ek naya data point hai, sir — hum usse seekh kar aage badhte hain.",
+    "Confidence tab aata hai jab preparation meets opportunity, sir."
+  ],
+  hi: [
+    "सर, भविष्य का सबसे अच्छा तरीका है कि उसे खुद बनाया जाए।",
+    "हर असफलता एक नया सबक है, सर — हम उससे सीखकर आगे बढ़ते हैं।",
+    "आत्मविश्वास तब आता है जब तैयारी और अवसर एक साथ मिलते हैं, सर।"
+  ],
+  en: [
+    "Sir, the best way to predict the future is to build it yourself.",
+    "Every failure is just a new data point, sir — we learn from it and move forward.",
+    "Confidence comes when preparation meets opportunity, sir."
+  ]
+};
+
+function detectLang(msg){
+  // Devanagari script present -> Hindi
+  if(/[\u0900-\u097F]/.test(msg)) return 'hi';
+  // Common Hinglish/roman-Hindi words -> Hinglish
+  const hinglishWords = /\b(hai|kya|kaun|kaise|kyu|kyun|nahi|nahin|tum|aap|mera|mujhe|hoon|ho|karo|kar|batao|sunao|dhanyavad|shukriya|namaste|acha|theek)\b/i;
+  if(hinglishWords.test(msg)) return 'hinglish';
+  // Otherwise treat as plain English
+  return 'en';
+}
+
+let conversationHistory = [];
+const SYSTEM_PROMPT = "You are JARVIS, a witty, calm, highly capable personal AI assistant inspired by Iron Man's JARVIS. Always address the user as 'sir'. Keep replies concise (2-4 sentences unless asked for detail). CRITICAL: always reply in the SAME language and script the user just used — if they wrote in Hindi (Devanagari), reply in Hindi (Devanagari); if English, reply in English; if Hinglish (Roman script mixed Hindi-English), reply in Hinglish.";
+
+async function callAnthropic(userText){
+  conversationHistory.push({ role: 'user', content: userText });
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': aiSettings.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: aiSettings.model,
+      max_tokens: 400,
+      system: SYSTEM_PROMPT,
+      messages: conversationHistory
+    })
+  });
+  if(!res.ok){
+    const errBody = await res.text();
+    throw new Error('Anthropic API error ' + res.status + ': ' + errBody.slice(0,200));
+  }
+  const data = await res.json();
+  const reply = data.content && data.content[0] ? data.content[0].text : '(empty response)';
+  conversationHistory.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
+async function callOpenAI(userText){
+  conversationHistory.push({ role: 'user', content: userText });
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ' + aiSettings.apiKey
+    },
+    body: JSON.stringify({
+      model: aiSettings.model,
+      max_tokens: 400,
+      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...conversationHistory]
+    })
+  });
+  if(!res.ok){
+    const errBody = await res.text();
+    throw new Error('OpenAI API error ' + res.status + ': ' + errBody.slice(0,200));
+  }
+  const data = await res.json();
+  const reply = data.choices && data.choices[0] ? data.choices[0].message.content : '(empty response)';
+  conversationHistory.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
+async function callAI(userText){
+  if(aiSettings.provider === 'openai') return callOpenAI(userText);
+  return callAnthropic(userText);
+}
+
+function addTypingLine(){
+  const div = document.createElement('div');
+  div.className = 'line jarvis';
+  div.id = 'thinkingLine';
+  div.innerHTML = '<span class="tag">JARVIS:</span><span class="cursor-blink"></span> processing...';
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+function removeTypingLine(){
+  const t = document.getElementById('thinkingLine');
+  if(t) t.remove();
+}
+
+function addLine(text, who){
+  const div = document.createElement('div');
+  div.className = 'line ' + who;
+  const tag = document.createElement('span');
+  tag.className = 'tag';
+  tag.textContent = who === 'jarvis' ? 'JARVIS:' : 'YOU:';
+  div.appendChild(tag);
+  div.appendChild(document.createTextNode(text));
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function getResponse(msg){
+  const lang = detectLang(msg);
+  const m = msg.toLowerCase();
+
+  const table = {
+    weather: {
+      hinglish: "Abhi mere paas live weather data connect nahi hai, sir, lekin main jald hi ye capability add kar sakta hoon.",
+      hi: "सर, अभी मेरे पास लाइव मौसम डेटा उपलब्ध नहीं है, लेकिन जल्द ही यह क्षमता जोड़ दी जाएगी।",
+      en: "I don't have live weather data connected yet, sir, but that capability can be added soon."
+    },
+    status: {
+      hinglish: "Systems nominal. CPU load low hai, memory stable hai, aur sabhi subsystems green zone mein hain, sir.",
+      hi: "सभी सिस्टम सामान्य हैं। सीपीयू लोड कम है, मेमोरी स्थिर है, और सभी सबसिस्टम ठीक स्थिति में हैं, सर।",
+      en: "All systems nominal, sir. CPU load is low, memory is stable, and every subsystem is in the green zone."
+    },
+    who: {
+      hinglish: "Main JARVIS hoon — aapka personal AI interface, plain HTML aur JavaScript se banaya gaya hai.",
+      hi: "मैं जार्विस हूँ — आपका पर्सनल एआई इंटरफेस, जो सादे एचटीएमएल और जावास्क्रिप्ट से बनाया गया है।",
+      en: "I'm JARVIS, sir — your personal AI interface, built with plain HTML and JavaScript."
+    },
+    name: {
+      hinglish: "Mera naam JARVIS hai — Just A Rather Very Intelligent System.",
+      hi: "मेरा नाम जार्विस है — जस्ट अ रादर वेरी इंटेलिजेंट सिस्टम।",
+      en: "My name is JARVIS — Just A Rather Very Intelligent System."
+    },
+    thanks: {
+      hinglish: "Hamesha aapki seva mein hazir hoon, sir.",
+      hi: "मैं हमेशा आपकी सेवा में हाज़िर हूँ, सर।",
+      en: "Always at your service, sir."
+    },
+    greet: {
+      hinglish: "Namaste sir, main hamesha ready hoon aapki madad ke liye.",
+      hi: "नमस्ते सर, मैं हमेशा आपकी मदद के लिए तैयार हूँ।",
+      en: "Hello, sir. I'm always ready to assist you."
+    },
+    fallback: {
+      hinglish: "Noted, sir. Main is request ko process kar raha hoon — abhi ye ek demo response hai, lekin structure real AI backend ke liye ready hai.",
+      hi: "समझ गया, सर। मैं इस अनुरोध को प्रोसेस कर रहा हूँ — अभी यह एक डेमो जवाब है, लेकिन ढांचा असली एआई बैकएंड के लिए तैयार है।",
+      en: "Noted, sir. I'm processing this request — this is currently a demo response, but the structure is ready for a real AI backend."
+    }
+  };
+
+  let key = 'fallback';
+  if(m.includes('weather')) key = 'weather';
+  else if(m.includes('status')) key = 'status';
+  else if(m.includes('motivat') || m.includes('quote') || m.includes('prerna')) {
+    const list = quotes[lang] || quotes.hinglish;
+    return { text: list[Math.floor(Math.random()*list.length)], lang };
+  }
+  else if(m.includes('kaun ho') || m.includes('who are you') || msg.includes('कौन')) key = 'who';
+  else if(m.includes('time') || msg.includes('समय')) {
+    const t = new Date().toLocaleTimeString('en-IN');
+    const text = lang === 'hi' ? `सर, अभी समय है ${t}` : lang === 'en' ? `The current time is ${t}, sir.` : `Abhi time hai ${t}, sir.`;
+    return { text, lang };
+  }
+  else if(m.includes('naam') || msg.includes('नाम')) key = 'name';
+  else if(m.includes('thanks') || m.includes('shukriya') || msg.includes('धन्यवाद') || msg.includes('शुक्रिया')) key = 'thanks';
+  else if(m.includes('hello') || m.includes('hi') || m.includes('namaste') || msg.includes('नमस्ते')) key = 'greet';
+
+  const entry = table[key];
+  const text = entry[lang] || entry.hinglish;
+  return { text, lang };
+}
+
+function handleSend(){
+  const text = input.value.trim();
+  if(!text) return;
+  addLine(text, 'user');
+  input.value = '';
+  const lang = detectLang(text);
+
+  if(aiSettings && aiSettings.apiKey){
+    addTypingLine();
+    callAI(text).then(reply=>{
+      removeTypingLine();
+      addLine(reply, 'jarvis');
+      speak(reply, detectLang(reply));
+    }).catch(err=>{
+      removeTypingLine();
+      const errMsg = 'Connection error, sir: ' + err.message + ' (⚙ AI SETUP se key/model check karein)';
+      addLine(errMsg, 'jarvis');
+      console.error(err);
+    });
+  } else {
+    setTimeout(()=>{
+      const { text: reply, lang: replyLang } = getResponse(text);
+      addLine(reply, 'jarvis');
+      speak(reply, replyLang);
+    }, 500 + Math.random()*400);
+  }
+}
+
+// Speak the initial greeting once, after voices load and on first user interaction
+// (browsers block autoplay audio until a user gesture)
+let greeted = false;
+function greetOnce(){
+  if(greeted) return;
+  greeted = true;
+  speak("Namaste, sir. Sab systems fully operational hain. Aap mujhse kya poochna chahenge?", 'hinglish');
+}
+document.addEventListener('click', greetOnce, { once:true });
+document.addEventListener('keydown', greetOnce, { once:true });
+
+sendBtn.addEventListener('click', handleSend);
+input.addEventListener('keydown', e=>{ if(e.key==='Enter') handleSend(); });
+document.querySelectorAll('.q').forEach(q=>{
+  q.addEventListener('click', ()=>{
+    input.value = q.dataset.msg;
+    handleSend();
+  });
+});
+</script>
+</body>
+</html>

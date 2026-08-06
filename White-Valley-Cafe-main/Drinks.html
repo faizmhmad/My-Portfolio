@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drinks</title> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- fontawesome link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="search.js"></script>
+
+<style>
+    /* Navbar Styling */
+        .navbar {
+        background-color: #050300 !important; 
+        }
+
+        .navbar-brand img {
+        border-radius: 50%;
+        }
+
+        .navbar-nav .nav-link {
+        color: white;
+        font-weight: bold;
+        margin: 0 10px;
+        position: relative;
+        padding-bottom: 4px;
+        transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background-color: #ffcc00;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+        color: #bbb;
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+        transform: scaleX(1);
+        }
+
+        /* Search Box */
+        .search-box {
+        margin-right: 15px;
+        }
+
+        .search-box input {
+        border-radius: 20px;
+        padding: 5px 10px;
+        }
+         /* Cart Icon Positioning */
+         .profile-icon {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Profile Icon */
+        .profile-icon img {
+        border-radius: 50%;
+
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                text-align: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin: 10px 0;}
+
+            .footer {
+               text-align: center;
+            }
+
+            .social-icons {
+               justify-content:center;
+            }
+        }
+         /* footer css */
+         .footer {
+            background-color: #0b110f; 
+            color: white;
+            padding-top: 20px;
+            position:sticky;
+
+        }
+
+        .footer h5 {
+            font-weight: bold;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .footer a:hover {
+            color: #bbb;
+        }
+
+        .social-icons a img {
+            width: 30px;
+            margin: 0 5px;
+        }
+
+        .store-badge {
+            width: 120px;
+            margin-top: 10px;
+        }
+
+          /* Styling for pill navigation */
+          .nav-pills {
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f8f8;
+            padding: 10px 0;
+        }
+
+        .nav-pills .nav-link {
+            color: #444;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .nav-pills .nav-link.active {
+            color: black;
+            font-weight: bold;
+            border-bottom: 2px solid rgb(249, 183, 60); 
+            background: transparent;
+        }
+
+        /* Divider line */
+        .nav-pills .nav-link::after {
+            content: "|";
+            color: #aaa;
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Remove divider from last item */
+        .nav-pills .nav-item:last-child .nav-link::after {
+            content: "";
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .nav-pills {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .nav-pills .nav-link {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+
+        /* Cards */
+           /* Card Styling */
+           .card {
+            border: none;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%; /* Ensuring all cards are of the same height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            margin-left:10px;
+        }
+        
+        /* Hover effect on card */
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 6px 12px rgba(9, 0, 0, 0.15);
+        }
+        
+        /* Product Image */
+        .card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+        }
+        
+        /* Card Body */
+        .card-body {
+            padding: 10px;
+        }
+        
+        /* Product Title */
+        .product-title {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Product Description */
+        .product-desc {
+            font-size: 0.9rem;
+            color: gray;
+        }
+        
+        /* Price */
+        .price {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Add Item Button */
+        .btn-add {
+            background-color: #007b43;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        /* Hover effect on Add Item button */
+        .btn-add:hover {
+            background-color: #005a30;
+            transform: scale(1.05);
+        }
+        
+        /* Out of Stock Button */
+        .out-of-stock {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+          /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollspy content */
+        .scrollspy-example {
+            position: relative;
+            /* max-height: 400px; */
+            /* overflow-y: auto; */
+            background-color: bisque;
+            padding: 1rem;
+        }
+
+        /* Fix section Overlap */
+        h3{
+            padding-top: 80px;
+            margin-top: -50px;
+        }
+
+        /* Horizontal Scrollspy */
+        .horizontal-scrollspy {
+            position: relative;
+            top: 0;
+            background-color: white;
+            z-index: 10;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .horizontal-scrollspy .nav-link {
+            display: inline-block;
+            padding: 10px 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .horizontal-scrollspy .nav-link.active {
+            background-color: #ff9d00;
+            color: white;
+        }
+
+        /* Cart Badge (Count) */
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none; 
+          }
+
+        /* Cart Dropdown */
+        .cart-container {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            display: none;
+            z-index: 1000;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Cart Header */
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Cart Item */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Remove Button */
+        .cart-item button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        /* Cart Footer */
+        .cart-footer {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Toast Animation */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+       
+
+</style>
+</head>
+<body style="background-color: bisque;">
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="home.html">
+                <img src="WhiteValley Logo.jpeg" alt="Logo" width="40" class="me-2"> 
+                <div>
+                    <label style="font-family: 'Times New Roman', Times, serif; font-size: larger; display: block;">White Valley Cafe</label>
+                    <small style="font-size:12px; color: rgb(237, 206, 172); display: block; margin-top: -7px; font-family:cursive;">Eleveted Coffee Moments.</small>
+                </div>
+            </a>
+            
+
+            <!-- Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="AboutUs.html">AboutUs</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="Menu.html">Menu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Reviews.html">Reviews</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ContactUs.html">ContactUs</a></li>
+                </ul>
+
+                <!-- Search and Profile Icon -->
+            <div class="d-flex align-items-center">
+                <div class="search-box position-relative">
+                    <input type="text" class="form-control ps-5" placeholder="Looking for something?">
+                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+                </div>
+                <a href="#" class="profile-icon ms-3" id="cart-icon">
+                    <img src="cart.png" alt="Cart" width="30">   
+                    <span id="cart-count" class="cart-badge">0</span>
+                </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Dropdown -->
+    <div class="cart-container" id="cart-container">
+        <div class="cart-header">
+            <span>Your Cart</span>
+            <i class="fas fa-times" style="cursor: pointer;" onclick="toggleCart()"></i>
+        </div>
+        <div id="cart-items"></div>
+        <div class="cart-footer">
+            <p><strong>Total: ₹ <span id="total-price">0</span></strong></p>
+            <button class="btn btn-success" id="checkout-btn" style="display: none;" onclick="redirectToPayment()">Proceed to Payment</button>
+        </div>
+    </div>
+     
+          <!-- Navigation Pills -->
+        <ul class="nav nav-pills justify-content-center" id="menuTabs">
+            <li class="nav-item">
+                <a class="nav-link" href="Bestseller.html">Bestseller</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="Drinks.html">Drinks</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="Food.html">Food</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="Deserts.html">Desserts</a>
+            </li>
+        </ul>
+<!-- Content Sections -->
+<div  style="background-color: bisque;">
+    <div class="container mt-3" style="background-color: bisque; font-family: cursive; font-size:large;">
+        <div id="bestseller" class="tab-content"></div>
+        <div id="drinks" class="tab-content d-none"></div>
+        <div id="food" class="tab-content d-none"></div>
+        <div id="merchandise" class="tab-content d-none"></div>
+        <div id="deserts" class="tab-content d-none"></div>
+        
+    </div>
+
+    
+    <div class="container mt-3 position-relative">
+            <!-- Horizontal Scrollspy -->
+            <nav id="drink-nav" class="nav nav-pills flex-row horizontal-scrollspy fixed-top">
+                <a class="nav-link active" href="#espresso">Espresso</a>
+                <a class="nav-link" href="#frappuccino">Frappuccino</a>
+                <a class="nav-link" href="#tea">Tea</a>
+                <a class="nav-link" href="#refreshers">Refreshers</a>
+                <a class="nav-link" href="#brewedcoffee">Brewed Coffee</a>
+                <a class="nav-link" href="#coldbrew">Cold Brew</a>
+                <a class="nav-link" href="#otherbeverages">Other Beverages</a>
+            </nav>
+    </div>
+    
+        <!-- Scrollable Drink Content -->
+    <div data-bs-spy="scroll" data-bs-target="#drink-nav" data-bs-offset="100" class="scrollspy-example">
+            
+            <!-- Espresso Section -->
+            <h3 id="espresso">Espresso</h3>
+            <!-- Cards -->
+        <div class="row g-3" style="background-color: bisque;">
+        <!-- Barista Pride Latte -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="BaristaPride.webp" alt="Barista Pride Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Barista Pride Latte</p>
+                        <p class="product-desc">Creamy and hot Barista Pride Latte</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 414.75</span>
+                    <button class="btn btn-add" data-name="Barista Pride Latte" data-price="414.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Iced Barista Pride Latte -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="IcedBarista.webp" alt="Iced Barista Pride Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Iced Barista Pride Latte</p>
+                        <p class="product-desc">Iced Barista Pride Latte</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹  456.75</span>
+                    <button class="btn btn-add" data-name="Iced Barista Pride Latte" data-price="456.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Java Iced Gingerbread Latte -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="IcedGingerBread.webp" alt="Iced Gingerbread Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Iced Gingerbread Latte</p>
+                        <p class="product-desc">Sweet and delicately spicy gingerbread flavors mingle with our signature espresso and velvety milk.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 456.75</span>
+                    <button class="btn btn-add" data-name="Iced Gingerbread Latte" data-price="456.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Vienna Creamy Latte-->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="ViennaCreamy.webp" alt="Vienna Creamy Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Vienna Creamy Latte</p>
+                        <p class="product-desc">a silky blend of espresso, steamed milk, mocha, and Vanilla Mascarpone sauce.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 414.75</span>
+                    <button class="btn btn-add" data-name="Vienna Creamy Latte" data-price="414.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Iced Vienna Creamy Latte-->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="IcedVienna.webp" alt="Iced Vienna Creamy Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Iced Vienna Creamy Latte</p>
+                        <p class="product-desc"> espresso, milk, mocha, and Vanilla Mascarpone sauce over ice</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 456.75</span>
+                    <button class="btn btn-add" data-name="Iced Vienna Creamy Latte" data-price="456.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Classic Hot Coffee -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="ClassicHot.webp" alt="Classic Hot Coffee">
+                    <div class="ms-3">
+                        <p class="product-title">Classic Hot Coffee</p>
+                        <p class="product-desc">StarWings Signature espresso paired with condensed milk </p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 157.50</span>
+                    <button class="btn btn-add" data-name="Classic Hot Coffee" data-price="157.50">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Toffee Nut Crunch Latte  -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="ToffeeNut.webp" alt="Toffee Nut Crunch Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Toffee Nut Crunch Latte</p>
+                        <p class="product-desc">A perfect combination of steamed milk, our signature espresso, heartwarming flavors of buttery toffee and the warmth of toasted nuts. </p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 414.75</span>
+                    <button class="btn btn-add" data-name="Toffee Nut Crunch Latte" data-price="414.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Crunchy Red Hat Mocha Latte  -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="CrunchyRed.webp" alt="Crunchy Red Hat Mocha Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Crunchy Red Hat Mocha Latte</p>
+                        <p class="product-desc">The Classic New York Cheese cake with a rich, creamy satiny texture and a crumbly biscuit base. An all time coffee house favourite.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 414.75</span>
+                    <button class="btn btn-add" data-name="Crunchy Red Hat Mocha Latte" data-price="414.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    
+            <!-- Frappuccino Section -->
+            <h3 id="frappuccino">Frappuccino</h3>
+            <!-- Cards -->
+      <div class="row g-3" style="background-color: bisque;">
+        <!-- Vienna Creamy Frappuccino -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="ViennaFrap.webp" alt="Vienna Creamy Frappuccino">
+                    <div class="ms-3">
+                        <p class="product-title">Vienna Creamy Frappuccino</p>
+                        <p class="product-desc"> a delightful blend of coffee, milk, mocha, and Vanilla Mascarpone sauce,</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 498.75</span>
+                    <button class="btn btn-add" data-name="Vienna Creamy Frappuccino" data-price="498.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Creme Brulee Frappuccino -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Creme.webp" alt="Creme Brulee Frappuccino">
+                    <div class="ms-3">
+                        <p class="product-title">Creme Brulee Frappuccino</p>
+                        <p class="product-desc">A decadent blend of coffee and milk infused with Crème Brulee flavors</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹498.75</span>
+                    <button class="btn btn-add" data-name="Creme Brulee Frappuccino" data-price="498.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Caramel Java Chip Frappuccino -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Caramel.webp" alt="Caramel Java Chip Frappuccino">
+                    <div class="ms-3">
+                        <p class="product-title">Caramel Java Chip Frappuccino</p>
+                        <p class="product-desc">Rich in flavour coffee blended with milk, chocolate chips, caramel syrup and Ice.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹  446.25</span>
+                    <button class="btn btn-add" data-name="Caramel Java Chip Frappuccino" data-price="446.25">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Coffee Frappuccino -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="CoffeeFrap.webp" alt="Coffee Frappuccino">
+                    <div class="ms-3">
+                        <p class="product-title">Coffee Frappuccino</p>
+                        <p class="product-desc">Coffee meets milk and ice in a blender and together they create one of our original Frappuccino® beverages.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹  325.50</span>
+                    <button class="btn btn-add" data-name="Coffee Frappuccino" data-price="325.50">Add Item</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+            <!-- Tea Section -->
+            <h3 id="tea">Tea</h3>
+            <!-- Cards -->
+     <div class="row g-3" style="background-color: bisque;">
+        <!-- Masala Chai -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Masala Chai.webp" alt="Masala Chai">
+                    <div class="ms-3">
+                        <p class="product-title">Masala Chai</p>
+                        <p class="product-desc">Our traditional masala chai with abundance of strong Indian spices and flavourful handpicked teas.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 294.00</span>
+                    <button class="btn btn-add" data-name="Masala Chai" data-price="294.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elaichi Chai -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Elaichi Chai.webp" alt="Elaichi Chai">
+                    <div class="ms-3">
+                        <p class="product-title">Elaichi Chai</p>
+                        <p class="product-desc">Our traditional chai with abundance of Cardamom and flavourful handpicked teas</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 294.00</span>
+                    <button class="btn btn-add" data-name="Elaichi Chai" data-price="294.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Green Tea Latte -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Green Tea.webp" alt="Green Tea Latte">
+                    <div class="ms-3">
+                        <p class="product-title">Green Tea Latte</p>
+                        <p class="product-desc">Smooth and creamy matcha is lightly sweetened and served with steamed milk.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 388.50</span>
+                    <button class="btn btn-add" data-name="Green Tea Latte" data-price="388.50">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- English Breakfast Black Tea -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="English Tea.webp" alt="English Breakfast Black Tea">
+                    <div class="ms-3">
+                        <p class="product-title">English Breakfast Black Tea</p>
+                        <p class="product-desc">A breakfast-style black tea of malty boldness and bright flavour, invigorating any time of the day.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 299.25</span>
+                    <button class="btn btn-add" data-name="English Breakfast Black Tea" data-price="299.25">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emperor'S Clouds And Mist Green Tea -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Emperor.webp" alt="Emperor'S Clouds And Mist Green Tea">
+                    <div class="ms-3">
+                        <p class="product-title">Emperor'S Clouds And Mist Green Tea</p>
+                        <p class="product-desc">this is a curly, silver-speckled, leaf-and-bud green tea combination with a lightly floral beginning, a toasty middle body and a softly sweet finish.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 309.75</span>
+                    <button class="btn btn-add" data-name="Emperor'S Clouds And Mist Green Tea" data-price="309.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Refreshers Section -->
+        <h3 id="refreshers">Refreshers</h3>
+        <!-- Cards -->
+        <div class="row g-3" style="background-color: bisque;">
+            <!-- Mango Dragonfruit Lemonade -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card m-2 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgn64PuD_RGgH_uGCbnapzdxIguoSaOmUgvA&s" alt="Mango Dragonfruit Lemonade">
+                        <div class="ms-3">
+                            <p class="product-title">Mango Dragonfruit Lemonade</p>
+                            <p class="product-desc">Tropical mango and dragonfruit flavors mixed with tangy lemonade, served over ice.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price">₹ 351.75</span>
+                        <button class="btn btn-add" data-name="Mango Dragonfruit Lemonade" data-price="351.75">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strawberry Acai Refresher -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card m-2 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="https://mocktail.net/wp-content/uploads/2021/05/Strawberry-Acai-Refresher-Recipe_ig.jpg" alt="Strawberry Acai Refresher">
+                        <div class="ms-3">
+                            <p class="product-title">Strawberry Acai Refresher</p>
+                            <p class="product-desc">Sweet strawberry and antioxidant-rich acai berry blended with coconut milk and ice.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price">₹ 367.50</span>
+                        <button class="btn btn-add" data-name="Strawberry Acai Refresher" data-price="367.50">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Very Berry Hibiscus -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card m-2 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="https://www.oliveyouwhole.com/wp-content/uploads/2019/05/Healthy-Very-Berry-Hibiscus-Lemonade-Starbucks-Refreshers-Recipe-3.jpg" alt="Very Berry Hibiscus">
+                        <div class="ms-3">
+                            <p class="product-title">Very Berry Hibiscus</p>
+                            <p class="product-desc">Hibiscus and mixed berries with real fruit juice and green coffee extract for a light caffeine boost.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price">₹ 341.25</span>
+                        <button class="btn btn-add" data-name="Very Berry Hibiscus" data-price="341.25">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pineapple Coconut Refresher -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card m-2 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj4onMOo4b8r11Q-AgwhyFR2SoWyRliDlBLw&s" alt="Pineapple Coconut Refresher">
+                        <div class="ms-3">
+                            <p class="product-title">Pineapple Coconut Refresher</p>
+                            <p class="product-desc">Tropical pineapple and coconut flavors with coconut milk, perfect for hot summer days.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price">₹ 325.50</span>
+                        <button class="btn btn-add" data-name="Pineapple Coconut Refresher" data-price="325.50">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peach Green Tea Lemonade -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card m-2 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTAXvDLHrKEzDutNivExEuIBj6HNk4WGimzg&s" alt="Peach Green Tea Lemonade">
+                        <div class="ms-3">
+                            <p class="product-title">Peach Green Tea Lemonade</p>
+                            <p class="product-desc">Juicy peach flavors combined with green tea and tangy lemonade, served over ice.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price">₹ 330.75</span>
+                        <button class="btn btn-add" data-name="Peach Green Tea Lemonade" data-price="330.75">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+            <!-- Brewed Cofeee Section -->
+            <h3 id="brewedcoffee">Brewed Coffee</h3>
+            <!-- Cards -->
+         <div class="row g-3" style="background-color: bisque;">
+        <!-- Cold Brew Black-->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Cold Brew.webp" alt="Cold Brew Black">
+                    <div class="ms-3">
+                        <p class="product-title">Cold Brew Black</p>
+                        <p class="product-desc">Kenya coffee is freshly ground and then steeped for 48 hours. This artisanal process results in deliciously iced coffee that is served over ice, unsweetened.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 336.00</span>
+                    <button class="btn btn-add" data-name="Cold Brew Black" data-price="336.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Coffee -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Filter coffee.webp" alt="Filter Coffee">
+                    <div class="ms-3">
+                        <p class="product-title">Filter Coffee</p>
+                        <p class="product-desc">Your favourite filter coffee prepared using a blend of our medium and dark roast coffees</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 294.00</span>
+                    <button class="btn btn-add" data-name="Filter Coffee" data-price="294.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Iced Shaken Strawberry Green Tea Lemonade -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Bestseller.webp" alt="Iced Shaken Strawberry Green Tea Lemonade">
+                    <div class="ms-3">
+                        <p class="product-title">Iced Shaken Strawberry Green Tea Lemonade</p>
+                        <p class="product-desc">Premium Teavana Green Tea shaken with juicy strawberry sauce and tangy lemonade for a drink with a refreshing and fruity flavour.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 330.75</span>
+                    <button class="btn btn-add" data-name="Iced Shaken Strawberry Green Tea Lemonade" data-price="330.75">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+          <!-- Cold Brew Section -->
+          <h3 id="coldbrew">Cold Brew</h3>
+          <!-- Cards -->
+      <div class="row g-3" style="background-color: bisque;">
+      <!-- Cold Brew with Ginger Ale -->
+      <div class="col-md-4 col-sm-6">
+          <div class="card m-2 p-3">
+              <div class="d-flex align-items-center">
+                  <img src="Cold Ginger.webp" alt="Cold Brew with Ginger Ale">
+                  <div class="ms-3">
+                      <p class="product-title">Cold Brew with Ginger Ale</p>
+                      <p class="product-desc">A delicious double layered cold brew beverage with ginger ale. A pure delight for a warm sunny day.</p>
+                  </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price"> ₹ 362.25</span>
+                  <button class="btn btn-add" data-name="Cold Brew with Ginger Ale" data-price="362.25">Add Item</button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Cold Brew with Vanilla Sweet Cream -->
+      <div class="col-md-4 col-sm-6">
+          <div class="card m-2 p-3">
+              <div class="d-flex align-items-center">
+                  <img src="ColdBrew Vanilla.webp" alt="Cold Brew with Vanilla Sweet Cream">
+                  <div class="ms-3">
+                      <p class="product-title">Cold Brew with Vanilla Sweet Cream</p>
+                      <p class="product-desc">StarWings cold brew over ice and topped with a house made vanilla sweet cream, which floats on top of the beverage before slowly cascading down.</p>
+                  </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price">₹ 341.25</span>
+                  <button class="btn btn-add" data-name="Cold Brew with Vanilla Sweet Cream" data-price="341.25">Add Item</button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Vietnamese Cold Brew -->
+      <div class="col-md-4 col-sm-6">
+          <div class="card m-2 p-3">
+              <div class="d-flex align-items-center">
+                  <img src="Vietnamese.webp" alt="Vietnamese Cold Brew">
+                  <div class="ms-3">
+                      <p class="product-title">Vietnamese Cold Brew</p>
+                      <p class="product-desc">Our slow steeped Cold brew shaken with condensed milk to strike the perfect balance of intense coffee and sweetness.</p>
+                  </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price">₹ 362.25</span>
+                  <button class="btn btn-add" data-name="Vietnamese Cold Brew" data-price="362.25">Add Item</button>
+              </div>
+          </div>
+      </div>
+
+      <!--Toffee Nut Crunch Cold Brew -->
+      <div class="col-md-4 col-sm-6">
+          <div class="card m-2 p-3">
+              <div class="d-flex align-items-center">
+                  <img src="ToffeeNutCrunch.webp" alt="Toffee Nut Crunch Cold Brew">
+                  <div class="ms-3">
+                      <p class="product-title">Toffee Nut Crunch Cold Brew</p>
+                      <p class="product-desc">Paired with the buttery and warm notes of toffee nut foam, topped with graham crackers.</p>
+                  </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price">₹ 456.75</span>
+                  <button class="btn btn-add" data-name="Toffee Nut Crunch Cold Brew" data-price="456.75">Add Item</button>
+              </div>
+          </div>
+      </div>
+
+      <!-- cold brew malt-->
+      <div class="col-md-4 col-sm-6">
+          <div class="card m-2 p-3">
+              <div class="d-flex align-items-center">
+                  <img src="malt.webp" alt="cold brew malt">
+                  <div class="ms-3">
+                      <p class="product-title">Cold brew malt</p>
+                      <p class="product-desc">Our Cold Brew blended with vanilla ice cream and malt.</p>
+                  </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price">₹ 514.50</span>
+                  <button class="btn btn-add" data-name="Cold brew malt" data-price="514.50">Add Item</button>
+              </div>
+          </div>
+      </div>
+    </div>
+
+
+     <!-- OtherBevarages Section -->
+  <h3 id="otherbeverages">Other Beverages</h3>
+     <!-- Cards -->
+ <div class="row g-3" style="background-color: bisque;">
+ <!-- Pistachio Java Chip Milkshake -->
+ <div class="col-md-4 col-sm-6">
+     <div class="card m-2 p-3">
+         <div class="d-flex align-items-center">
+             <img src="Pistachio.webp" alt="Pistachio Java Chip Milkshake">
+             <div class="ms-3">
+                 <p class="product-title">Pistachio Java Chip Milkshake</p>
+                 <p class="product-desc">Luxurious pistachio flavours meet milk and ice for an irresistible delight.</p>
+             </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center mt-3">
+             <span class="price">₹ 388.50</span>
+             <button class="btn btn-add" data-name="Pistachio Java Chip Milkshake" data-price="388.50">Add Item</button>
+         </div>
+     </div>
+ </div>
+
+ <!-- Mango Dragonfruit Refresher -->
+ <div class="col-md-4 col-sm-6">
+     <div class="card m-2 p-3">
+         <div class="d-flex align-items-center">
+             <img src="Mango Dragon.webp" alt="Mango Dragonfruit Refresher">
+             <div class="ms-3">
+                 <p class="product-title">Mango Dragonfruit Refresher</p>
+                 <p class="product-desc"> a clever combination of vibrant lemonade, sweet mango and refreshing dragonfruit flavors hand-shaken with ice plus a scoop of diced dragonfruits.</p>
+             </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center mt-3">
+             <span class="price">₹ 351.75</span>
+             <button class="btn btn-add" data-name="Mango Dragonfruit Refresher" data-price="351.75">Add Item</button>
+         </div>
+     </div>
+ </div>
+
+ <!-- Marshmallow Hot Chocolate -->
+ <div class="col-md-4 col-sm-6">
+     <div class="card m-2 p-3">
+         <div class="d-flex align-items-center">
+             <img src="Marshmallow.webp" alt="Marshmallow Hot Chocolate">
+             <div class="ms-3">
+                 <p class="product-title">Marshmallow Hot Chocolate</p>
+                 <p class="product-desc">Decadent hot chocolate crowned with marshmallows a warm hug in a cup.</p>
+             </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center mt-3">
+             <span class="price">₹ 414.75</span>
+             <button class="btn btn-add" data-name="Marshmallow Hot Chocolate" data-price="414.75">Add Item</button>
+         </div>
+     </div>
+ </div>
+
+ <!-- Iced Signature Chocolate -->
+ <div class="col-md-4 col-sm-6">
+     <div class="card m-2 p-3">
+         <div class="d-flex align-items-center">
+             <img src="Iced Signature.webp" alt="Iced Signature Chocolate">
+             <div class="ms-3">
+                 <p class="product-title">Iced Signature Chocolate</p>
+                 <p class="product-desc">Four cocoas and chilled milk over ice. Topped with chocolate powder. </p>
+             </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center mt-3">
+             <span class="price">₹ 336.00</span>
+             <button class="btn btn-add" data-name="Iced Signature Chocolate" data-price="336.00">Add Item</button>
+         </div>
+     </div>
+ </div>
+</div>
+
+
+        </div> 
+
+        
+    </div>
+    
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Footer Section -->
+        
+        <footer class="footer bg-dark text-light">
+            <div class="container py-4">
+                <div class="row">
+                                    <!-- Blogs Section -->
+                    <div class="col-md-3 col-sm-6">
+                        <h5>Blogs</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Latest Articles</a></li>
+                            <li><a href="#">Coffee Trends</a></li>
+                            <li><a href="#">Barista Tips</a></li>
+                        </ul>
+                    </div>
+    
+                    <!-- Our Outlets Section -->
+                    <div class="col-md-3 col-sm-6">
+                        <h5>Our Outlets</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Find a Store</a></li>
+                            <li><a href="#">Franchise Opportunities</a></li>
+                            <li><a href="#">Store Locator</a></li>
+                        </ul>
+                    </div>
+    
+                    <!-- Quick Links -->
+                    <div class="col-md-3 col-sm-6">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">FAQs</a></li>
+                            <li><a href="#">Customer Service</a></li>
+                            <li><a href="#">Delivery</a></li>
+                            <li><a href="#">Season's Gifting</a></li>
+                            <li><a href="#">Our Reviews</a></li>
+                        </ul>
+                    </div>
+    
+                    <!-- Social Media & Apps -->
+                    <div class="col-md-3 col-sm-6 text-center">
+                        <h5>Social Media</h5>
+                        <div class="social-icons">
+                            <a href="#"><img src="facebook.svg" alt="Facebook"></a>
+                            <a href="#"><img src="twitter.svg" alt="Twitter"></a>
+                            <a href="#"><img src="instagram.svg" alt="Instagram"></a>
+                        </div>
+                        <h6 class="mt-3">Download Our App</h6>
+                        <a href="#"><img src="appstoreiOS.png" alt="App Store" class="store-badge"></a>
+                        <a href="#"><img src="appstoreAndroid.png" alt="Google Play" class="store-badge"></a>
+                    </div>
+                    <hr>
+                    <p class="text-end text-sm-start small"> That's All.</p>
+    
+                </div>
+            <p class="text-center small mb-0 mt-2 footer-copyright">© 2026 White Valley. All rights reserved.</p>
+
+            </div>
+        </footer>
+
+
+        <script>
+            //for Navbar
+            document.addEventListener("DOMContentLoaded", function () {
+        console.log("Navbar loaded successfully!");
+         });
+      
+         //for footter
+         document.addEventListener("DOMContentLoaded", function () {
+        console.log("Footer loaded successfully!");
+        });
+    
+          // Cart
+// Check for searched product and filter display
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectedProductData = sessionStorage.getItem('selectedProduct');
+        
+        if (selectedProductData) {
+            try {
+                const selectedProduct = JSON.parse(selectedProductData);
+                console.log("Selected product from search:", selectedProduct);
+                
+                // Filter to show only the searched product
+                filterItems(selectedProduct.name);
+                
+                // Clear the session storage after using it
+                sessionStorage.removeItem('selectedProduct');
+            } catch (e) {
+                console.error("Error parsing selected product:", e);
+            }
+        }
+    });
+
+    // Function to filter items and show only the searched one
+    function filterItems(searchName) {
+        const cards = document.querySelectorAll('.card');
+        let found = false;
+        
+        cards.forEach(card => {
+            const productTitle = card.querySelector('.product-title');
+            if (productTitle) {
+                const productName = productTitle.textContent.trim().toLowerCase();
+                const searchTerm = searchName.toLowerCase().trim();
+                
+                if (productName.includes(searchTerm)) {
+                    card.style.display = '';
+                    found = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+        
+        // Add Show All button if items were filtered
+        if (found) {
+            addShowAllButton();
+        }
+    }
+
+    // Function to add Show All button
+    function addShowAllButton() {
+        const existingBtn = document.getElementById('show-all-btn');
+        if (existingBtn) {
+            existingBtn.remove();
+        }
+        
+        const container = document.querySelector('.container.mt-3');
+        if (container) {
+            const showAllBtn = document.createElement('button');
+            showAllBtn.id = 'show-all-btn';
+            showAllBtn.className = 'btn btn-primary mb-3';
+            showAllBtn.style.cssText = 'background-color: #007b43; border: none; border-radius: 20px; padding: 10px 25px; margin-left: 10px;';
+            showAllBtn.innerHTML = '<i class="fas fa-list"></i> Show All Items';
+            showAllBtn.onclick = showAllItems;
+            
+            const firstContent = container.querySelector('.tab-content');
+            if (firstContent) {
+                container.insertBefore(showAllBtn, firstContent);
+            }
+        }
+    }
+
+    // Function to show all items
+    function showAllItems() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.style.display = '';
+        });
+        
+        const showAllBtn = document.getElementById('show-all-btn');
+        if (showAllBtn) {
+            showAllBtn.remove();
+        }
+        
+        const searchInput = document.querySelector('.search-box input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+    }
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || []; // Retrieve cart from localStorage
+
+const cartIcon = document.getElementById("cart-icon");
+const cartCount = document.getElementById("cart-count");
+const cartContainer = document.getElementById("cart-container");
+const cartItemsDiv = document.getElementById("cart-items");
+const totalPriceEl = document.getElementById("total-price");
+const checkoutBtn = document.getElementById("checkout-btn");
+
+// Toggle Cart Visibility
+function toggleCart() {
+    cartContainer.style.display = (cartContainer.style.display === "none" || cartContainer.style.display === "") ? "block" : "none";
+}
+
+// Update Cart UI
+function updateCart() {
+    cartItemsDiv.innerHTML = "";
+    let totalPrice = 0;
+    let totalItems = 0;
+
+    cart.forEach((item, index) => {
+        totalPrice += item.price * item.quantity;
+        totalItems += item.quantity;
+
+        let cartItem = document.createElement("div");
+        cartItem.classList.add("cart-item");
+        cartItem.innerHTML = `
+            <span>${item.name} (x${item.quantity}) - ₹${(item.price * item.quantity).toFixed(2)}</span>
+            <button onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartItemsDiv.appendChild(cartItem);
+    });
+
+    totalPriceEl.innerText = totalPrice.toFixed(2);
+    cartCount.innerText = totalItems;
+    cartCount.style.display = totalItems > 0 ? "block" : "none";
+    checkoutBtn.style.display = totalItems > 0 ? "block" : "none";
+
+    // Save cart data to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Add to Cart
+document.querySelectorAll(".btn-add").forEach(button => {
+    button.addEventListener("click", function() {
+        let itemName = this.getAttribute("data-name");
+        let itemPrice = parseFloat(this.getAttribute("data-price"));
+
+        let existingItem = cart.find(item => item.name === itemName);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ name: itemName, price: itemPrice, quantity: 1 });
+        }
+
+        updateCart();
+        showToast(itemName + ' added to cart!');
+    });
+});
+
+// Toast notification function
+function showToast(message) {
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background-color: #007b43;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: bold;
+        animation: slideIn 0.3s ease-out;
+    `;
+    toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Remove from Cart
+function removeFromCart(index) {
+    if (cart[index].quantity > 1) {
+        cart[index].quantity -= 1;
+    } else {
+        cart.splice(index, 1);
+    }
+    updateCart();
+}
+
+// Show cart when clicking the cart icon
+cartIcon.addEventListener("click", toggleCart);
+
+// Load cart from localStorage on page load
+document.addEventListener("DOMContentLoaded", updateCart);
+
+//Cart Modal
+function redirectToPayment() {
+        window.location.href = "payment.html"; 
+    }
+
+   </script>
+   
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- fontawesome link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="search.js"></script>
+    
+<style>
+    /* Navbar Styling */
+        .navbar {
+        background-color: #050300 !important; 
+        }
+
+        .navbar-brand img {
+        border-radius: 50%;
+        }
+
+        .navbar-nav .nav-link {
+        color: white;
+        font-weight: bold;
+        margin: 0 10px;
+        position: relative;
+        padding-bottom: 4px;
+        transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background-color: #ffcc00;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+        color: #bbb;
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+        transform: scaleX(1);
+        }
+
+        /* Search Box */
+        .search-box {
+        margin-right: 15px;
+        }
+
+        .search-box input {
+        border-radius: 20px;
+        padding: 5px 10px;
+        }
+
+                /* Cart Icon Positioning */
+        .profile-icon {
+            position: relative;
+            display: inline-block;
+        }
+        /* Profile Icon */
+        .profile-icon img {
+        border-radius: 50%;
+
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                text-align: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin: 10px 0;}
+
+            .footer {
+               text-align: center;
+            }
+
+            .social-icons {
+               justify-content:center;
+            }
+        }
+         /* footer css */
+         .footer {
+            background-color: #0b110f; 
+            color: white;
+            position: relative;
+            padding-top: 20px;
+        }
+
+        .footer h5 {
+            font-weight: bold;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .footer a:hover {
+            color: #bbb;
+        }
+
+        .social-icons a img {
+            width: 30px;
+            margin: 0 5px;
+        }
+
+        .store-badge {
+            width: 120px;
+            margin-top: 10px;
+        }
+
+          /* Styling for pill navigation */
+          .nav-pills {
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f8f8;
+            padding: 10px 0;
+        }
+
+        .nav-pills .nav-link {
+            color: #444;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .nav-pills .nav-link.active {
+            color: black;
+            font-weight: bold;
+            border-bottom: 2px solid rgb(249, 183, 60); 
+            background: transparent;
+        }
+
+        /* Divider line */
+        .nav-pills .nav-link::after {
+            content: "|";
+            color: #aaa;
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Remove divider from last item */
+        .nav-pills .nav-item:last-child .nav-link::after {
+            content: "";
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .nav-pills {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .nav-pills .nav-link {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+
+        /* Cards */
+           /* Card Styling */
+           .card {
+            border: none;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            margin-left:10px;
+        }
+        
+        /* Hover effect on card */
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 6px 12px rgba(9, 0, 0, 0.15);
+        }
+        
+        /* Product Image */
+        .card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+        }
+        
+        /* Card Body */
+        .card-body {
+            padding: 10px;
+        }
+        
+        /* Product Title */
+        .product-title {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Product Description */
+        .product-desc {
+            font-size: 0.9rem;
+            color: gray;
+        }
+        
+        /* Price */
+        .price {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Add Item Button */
+        .btn-add {
+            background-color: #007b43;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        /* Hover effect on Add Item button */
+        .btn-add:hover {
+            background-color: #005a30;
+            transform: scale(1.05);
+        }
+        
+        /* Out of Stock Button */
+        .out-of-stock {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+                .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none; 
+
+          }
+
+        /* Cart Dropdown */
+        .cart-container {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            display: none;
+            z-index: 1000;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Cart Header */
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Cart Item */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Remove Button */
+        .cart-item button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        /* Cart Footer */
+        .cart-footer {
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+
+
+</style>
+</head>
+<body style="background-color: bisque;">
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none" href="home.html">
+                <img src="WhiteValley Logo.jpeg" alt="Logo" width="40" class="me-2"> 
+                <div>
+                    <label style="font-family: 'Times New Roman', Times, serif; font-size: larger; display: block;">White Valley Cafe</label>
+                    <small style="font-size:12px; color: rgb(237, 206, 172); display: block; margin-top: -7px; font-family:cursive;">Eleveted Coffee Moments.</small>
+                </div>
+            </a>
+            
+
+            <!-- Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="AboutUs.html">AboutUs</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="Menu.html">Menu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Reviews.html">Reviews</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ContactUs.html">ContactUs</a></li>
+                </ul>
+
+                <!-- Search and Profile Icon -->
+            <div class="d-flex align-items-center">
+                <div class="search-box position-relative">
+                    <input type="text" class="form-control ps-5" placeholder="Looking for something?">
+                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+                </div>
+                <a href="#" class="profile-icon ms-3" id="cart-icon">
+                    <img src="cart.png" alt="Cart" width="30">   
+                    <span id="cart-count" class="cart-badge">0</span>
+                </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+     
+
+    <!-- Cart Dropdown -->
+    <div class="cart-container" id="cart-container">
+        <div class="cart-header">
+            <span>Your Cart</span>
+            <i class="fas fa-times" style="cursor: pointer;" onclick="toggleCart()"></i>
+        </div>
+        <div id="cart-items"></div>
+        <div class="cart-footer">
+            <p><strong>Total: ₹ <span id="total-price">0</span></strong></p>
+            <button class="btn btn-success" id="checkout-btn" style="display: none;" onclick="redirectToPayment()">Proceed to Payment</button>
+        </div>
+    </div>
+
+
+          <!-- Navigation Pills -->
+            <ul class="nav nav-pills justify-content-center" id="menuTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="Bestseller.html">Bestseller</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Drinks.html">Drinks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Food.html">Food</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Deserts.html">Desserts</a>
+                </li>
+            </ul>
+
+    <!-- Content Sections -->
+    <div  style="background-color: bisque;">
+        <div class="container mt-3" style="background-color: bisque; font-family: cursive; font-size:large;">
+            <div id="bestseller" class="tab-content"></div>
+            <div id="drinks" class="tab-content d-none"></div>
+            <div id="food" class="tab-content d-none"></div>
+            <div id="deserts" class="tab-content d-none"></div>
+            
+        </div>
+
+    <!-- Cards -->
+    <div class="row g-3" style="background-color: bisque;">
+        <!-- Cold Coffee -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="IcedVienna.webp" alt="Cold Coffee">
+                    <div class="ms-3">
+                        <p class="product-title">Iced Vienna Creamy Latte</p>
+                        <p class="product-desc">espresso, milk, mocha, and Vanilla Mascarpone sauce over ice.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 456.75</span>
+                    <button class="btn btn-add" data-name="Cold Coffee" data-price="320.25">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Java Chip Frappuccino -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="Caramel.webp" alt="Java Chip Frappuccino">
+                    <div class="ms-3">
+                        <p class="product-title">Caramel Java Chip Frappuccino</p>
+                        <p class="product-desc">Rich in flavour coffee blended with milk, chocolate chips, caramel syrup and Ice.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 446.25</span>
+                    <button class="btn btn-add" data-name="Java Chip Frappuccino" data-price="388.50">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crispy French Fries -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgn64PuD_RGgH_uGCbnapzdxIguoSaOmUgvA&s" alt="Crispy French Fries">
+                    <div class="ms-3">
+                        <p class="product-title">Mango Dragonfruit Lemonade</p>
+                        <p class="product-desc">Tropical mango and dragonfruit flavors mixed with tangy lemonade, served over ice.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 351.75</span>
+                    <button class="btn btn-add" data-name="Crispy French Fries" data-price="199.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Margherita Pizza -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=400&h=400&fit=crop&crop=face" alt="Margherita Pizza">
+                    <div class="ms-3">
+                        <p class="product-title">Margherita Pizza</p>
+                        <p class="product-desc">Classic thin crust pizza with fresh tomato sauce, mozzarella cheese, and basil leaves.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 399.00</span>
+                    <button class="btn btn-add" data-name="Margherita Pizza" data-price="399.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Veggie Burger -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400&h=400&fit=crop&crop=face" alt="Veggie Burger">
+                    <div class="ms-3">
+                        <p class="product-title">Veggie Burger</p>
+                        <p class="product-desc">Plant-based patty with lettuce, tomato, onion, pickles, and special sauce in a brioche bun.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 299.00</span>
+                    <button class="btn btn-add" data-name="Veggie Burger" data-price="299.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cheese Garlic Bread -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://www.vegrecipesofindia.com/wp-content/uploads/2015/07/cheese-garlic-bread-recipe-1.jpg" alt="Cheese Garlic Bread">
+                    <div class="ms-3">
+                        <p class="product-title">Cheese Garlic Bread</p>
+                        <p class="product-desc">Toasted bread with garlic butter and melted mozzarella cheese.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 199.00</span>
+                    <button class="btn btn-add" data-name="Cheese Garlic Bread" data-price="199.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- New York Cheesecake -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w-400&h=400&fit=crop" alt="New York Cheesecake">
+                    <div class="ms-3">
+                        <p class="product-title">New York Cheesecake</p>
+                        <p class="product-desc">The Classic New York Cheesecake with a rich, creamy satiny texture and a crumbly biscuit base.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 425.00</span>
+                    <button class="btn btn-add" data-name="New York Cheesecake" data-price="283.50">Add Item</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chocolate Brownie -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card m-2 p-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://laneandgreyfare.com/wp-content/uploads/2024/07/Easy-Chocolate-Mousse-Eggless-1.jpg" alt="Chocolate Brownie">
+                    <div class="ms-3">
+                        <p class="product-title">Chocolate Mousse</p>
+                        <p class="product-desc">Light and airy dark chocolate mousse with whipped cream topping.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="price">₹ 285.00</span>
+                    <button class="btn btn-add" data-name="Chocolate Brownie" data-price="285.00">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Footer Section -->
+        <footer class="footer bg-dark text-light">
+           <div class="container py-4">
+               <div class="row">
+                                   <!-- Blogs Section -->
+                   <div class="col-md-3 col-sm-6">
+                       <h5>Blogs</h5>
+                       <ul class="list-unstyled">
+                           <li><a href="#">Latest Articles</a></li>
+                           <li><a href="#">Coffee Trends</a></li>
+                           <li><a href="#">Barista Tips</a></li>
+                       </ul>
+                   </div>
+   
+                   <!-- Our Outlets Section -->
+                   <div class="col-md-3 col-sm-6">
+                       <h5>Our Outlets</h5>
+                       <ul class="list-unstyled">
+                           <li><a href="#">Find a Store</a></li>
+                           <li><a href="#">Franchise Opportunities</a></li>
+                           <li><a href="#">Store Locator</a></li>
+                       </ul>
+                   </div>
+   
+                   <!-- Quick Links -->
+                   <div class="col-md-3 col-sm-6">
+                       <h5>Quick Links</h5>
+                       <ul class="list-unstyled">
+                           <li><a href="#">Privacy Policy</a></li>
+                           <li><a href="#">FAQs</a></li>
+                           <li><a href="#">Customer Service</a></li>
+                           <li><a href="#">Delivery</a></li>
+                           <li><a href="#">Season's Gifting</a></li>
+                           <li><a href="#">Our Reviews</a></li>
+                       </ul>
+                   </div>
+   
+                   <!-- Social Media & Apps -->
+                   <div class="col-md-3 col-sm-6 text-center">
+                       <h5>Social Media</h5>
+                       <div class="social-icons">
+                           <a href="#"><img src="facebook.svg" alt="Facebook"></a>
+                           <a href="#"><img src="twitter.svg" alt="Twitter"></a>
+                           <a href="#"><img src="instagram.svg" alt="Instagram"></a>
+                       </div>
+                       <h6 class="mt-3">Download Our App</h6>
+                       <a href="#"><img src="appstoreiOS.png" alt="App Store" class="store-badge"></a>
+                       <a href="#"><img src="appstoreAndroid.png" alt="Google Play" class="store-badge"></a>
+                   </div>
+                   <hr>
+                   <p class="text-end text-sm-start small">That's All.</p>
+   
+               </div>
+            <p class="text-center small mb-0 mt-2 footer-copyright">© 2026 White Valley. All rights reserved.</p>
+           </div>
+       </footer>
+
+
+       <script>
+        //for Navbar
+        document.addEventListener("DOMContentLoaded", function () {
+    console.log("Navbar loaded successfully!");
+     });
+  
+     //for footter
+     document.addEventListener("DOMContentLoaded", function () {
+    console.log("Footer loaded successfully!");
+    });  
+
+   
+    // Cart
+// Check for searched product and filter display
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectedProductData = sessionStorage.getItem('selectedProduct');
+        
+        if (selectedProductData) {
+            try {
+                const selectedProduct = JSON.parse(selectedProductData);
+                console.log("Selected product from search:", selectedProduct);
+                
+                // Filter to show only the searched product
+                filterMenuItems(selectedProduct.name);
+                
+                // Clear the session storage after using it
+                sessionStorage.removeItem('selectedProduct');
+            } catch (e) {
+                console.error("Error parsing selected product:", e);
+            }
+        }
+    });
+
+    // Function to filter menu items and show only the searched one
+    function filterMenuItems(searchName) {
+        const cards = document.querySelectorAll('.card');
+        let found = false;
+        
+        cards.forEach(card => {
+            const productTitle = card.querySelector('.product-title');
+            if (productTitle) {
+                const productName = productTitle.textContent.trim().toLowerCase();
+                const searchTerm = searchName.toLowerCase().trim();
+                
+                if (productName.includes(searchTerm)) {
+                    card.style.display = '';
+                    found = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+        
+        // Add Show All button if items were filtered
+        if (found) {
+            addShowAllButton();
+        }
+    }
+
+    // Function to add Show All button
+    function addShowAllButton() {
+        const existingBtn = document.getElementById('show-all-btn');
+        if (existingBtn) {
+            existingBtn.remove();
+        }
+        
+        const container = document.querySelector('.container.mt-3');
+        if (container) {
+            const showAllBtn = document.createElement('button');
+            showAllBtn.id = 'show-all-btn';
+            showAllBtn.className = 'btn btn-primary mb-3';
+            showAllBtn.style.cssText = 'background-color: #007b43; border: none; border-radius: 20px; padding: 10px 25px; margin-left: 10px;';
+            showAllBtn.innerHTML = '<i class="fas fa-list"></i> Show All Items';
+            showAllBtn.onclick = showAllItems;
+            
+            const firstContent = container.querySelector('.tab-content');
+            if (firstContent) {
+                container.insertBefore(showAllBtn, firstContent);
+            }
+        }
+    }
+
+    // Function to show all items
+    function showAllItems() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.style.display = '';
+        });
+        
+        const showAllBtn = document.getElementById('show-all-btn');
+        if (showAllBtn) {
+            showAllBtn.remove();
+        }
+        
+        const searchInput = document.querySelector('.search-box input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+    }
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const cartIcon = document.getElementById("cart-icon");
+const cartCount = document.getElementById("cart-count");
+const cartContainer = document.getElementById("cart-container");
+const cartItemsDiv = document.getElementById("cart-items");
+const totalPriceEl = document.getElementById("total-price");
+const checkoutBtn = document.getElementById("checkout-btn");
+
+// Toggle Cart Visibility
+function toggleCart() {
+    cartContainer.style.display = (cartContainer.style.display === "none" || cartContainer.style.display === "") ? "block" : "none";
+}
+
+// Update Cart UI
+function updateCart() {
+    cartItemsDiv.innerHTML = "";
+    let totalPrice = 0;
+    let totalItems = 0;
+
+    cart.forEach((item, index) => {
+        totalPrice += item.price * item.quantity;
+        totalItems += item.quantity;
+
+        let cartItem = document.createElement("div");
+        cartItem.classList.add("cart-item");
+        cartItem.innerHTML = `
+            <span>${item.name} (x${item.quantity}) - ₹${(item.price * item.quantity).toFixed(2)}</span>
+            <button onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartItemsDiv.appendChild(cartItem);
+    });
+
+    totalPriceEl.innerText = totalPrice.toFixed(2);
+    cartCount.innerText = totalItems;
+    cartCount.style.display = totalItems > 0 ? "block" : "none";
+    checkoutBtn.style.display = totalItems > 0 ? "block" : "none";
+
+    // Save cart data to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Add to Cart
+document.querySelectorAll(".btn-add").forEach(button => {
+    button.addEventListener("click", function() {
+        let itemName = this.getAttribute("data-name");
+        let itemPrice = parseFloat(this.getAttribute("data-price"));
+
+        let existingItem = cart.find(item => item.name === itemName);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ name: itemName, price: itemPrice, quantity: 1 });
+        }
+
+        updateCart();
+    });
+});
+
+// Remove from Cart
+function removeFromCart(index) {
+    if (cart[index].quantity > 1) {
+        cart[index].quantity -= 1;
+    } else {
+        cart.splice(index, 1);
+    }
+    updateCart();
+}
+
+// Show cart when clicking the cart icon
+cartIcon.addEventListener("click", toggleCart);
+
+// Load cart from localStorage on page load
+document.addEventListener("DOMContentLoaded", updateCart);
+
+
+//Cart Modal
+function redirectToPayment() {
+        window.location.href = "payment.html"; 
+    }
+
+    </script>
+
+   
+</body>
+</html>
